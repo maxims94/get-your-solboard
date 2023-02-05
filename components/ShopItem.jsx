@@ -1,6 +1,6 @@
 import styles from '../styles/Home.module.css'
 
-import { Divider, Image, Flex, Alert, IconAlertCircle } from '@mantine/core';
+import { Divider, Image, Flex, Alert } from '@mantine/core';
 
 import { useState } from 'react';
 import { Modal, Button, Group, Text, Title, Radio } from '@mantine/core';
@@ -14,6 +14,7 @@ import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
 const NFT_PRICES = require('nft_data/nft_prices.json')
 
 export default function ShopItem({ officialName, shortName, itemPrice }) {
+
   const [opened, setOpened] = useState(false);
   const [coupon, setCoupon] = useState('react');
   const [total, setTotal] = useState(0);
