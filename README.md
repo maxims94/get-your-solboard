@@ -1,8 +1,12 @@
 # Get your SolBoard!
 
-An onlineshop for skateboards on Solana with a loyalty programme. The special thing about is that, during the checkout, you can select from a coupon NFTs that you have in your wallet and reedem them to get a discount. **You do that in the same interface**. This is achieved by inventing an architecture that is similar to Solana Pay, but also crucially different (see below).
+An onlineshop for skateboards on Solana with a loyalty programme. The special thing about is that, during the checkout, you can select from a coupon NFTs that you have in your wallet and reedem them to get a discount. **You do that in the same window**. This is achieved by inventing an architecture that is similar to Solana Pay, but also crucially different (see below).
 
 This is my contribution to the Encode X Solana Hackathon 2023
+
+## Screenshots
+
+
 
 ## How does it work?
 
@@ -12,7 +16,7 @@ You can only pay in SOL
 
 For every skateboard you purchase, you get an NFT of that skateboard for free
 
-### Mechanism of the loyalty programme
+Additionally, there's a loyalty programme.
 
 If the price of the item that you buy is high enough, you get a coupon that you can redeem for a discount.
 
