@@ -4,9 +4,12 @@ An onlineshop for skateboards on Solana with a loyalty programme. The special th
 
 This is my contribution to the Encode X Solana Hackathon 2023
 
-## Screenshots
+## Screenshot 1
 
 ![Screen1](/img/screen1.png)
+
+## Screenshot 2
+
 ![Screen2](/img/screen2.png)
 
 ## How does it work?
