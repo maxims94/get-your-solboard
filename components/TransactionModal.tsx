@@ -3,12 +3,23 @@ import styles from '../styles/Home.module.css'
 import { useState } from 'react';
 import { Modal, Button, Group, Text, Title, Radio } from '@mantine/core';
 
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction } from '@solana/web3.js';
+
 export default function TransactionModal() {
   const [opened, setOpened] = useState(false);
   const [value, setValue] = useState('react');
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
 
   const openTransaction = event => {
     event.preventDefault()
+
+    if (!connection || !publicKey) {
+      console.log("Not connected!")
+      return
+    }
+
     setOpened(true)
   }
 
@@ -16,9 +27,37 @@ export default function TransactionModal() {
     event.preventDefault()
     console.log("Perform Transaction")
 
-    const res = await fetch(`/api/request_transaction`)
+    // TODO: Change state to "waiting for tx"
+
+    const req_body = {
+      account: 'HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV',
+      product: "skateboard_01",
+      coupon:"null"
+    }
+
+    const res = await fetch('/api/request_transaction', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(req_body)
+    })
+    
     const data = await res.json()
-    console.log(data)
+
+    // console.log(data)
+
+    const tx_base64 = data.transaction
+    
+    const recoveredTransaction = Transaction.from(
+      Buffer.from(tx_base64, "base64")
+    )
+
+    console.log("Send to wallet")
+
+    sendTransaction(recoveredTransaction, connection)
+    
   }
 
   return (
