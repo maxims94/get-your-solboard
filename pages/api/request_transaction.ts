@@ -97,8 +97,8 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
     let discount = 0
     const productPrice = NFT_PRICES[product]
     // const productPrice = 0.7
-    let couponName;
-    let couponUri;
+    let couponName = '';
+    let couponUri = '';
 
     if (productPrice >= 0.5) {
         discount = 0.05
@@ -140,7 +140,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
   // Convert
 
-  let output = {}
+  let output = {'transaction': '', 'coupon_transaction': ''}
   
   const latestBlockhash = await connection.getLatestBlockhash()
   const transaction = await transactionBuilder.toTransaction(latestBlockhash)
@@ -167,7 +167,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
     couponTransaction.feePayer = account
 
-    couponTransaction.sign(shopKeypair, mintCouponKeypair)
+    couponTransaction.sign(shopKeypair, mintCouponKeypair as Keypair)
 
     const serializedCouponTransaction = couponTransaction.serialize({
         requireAllSignatures: false
