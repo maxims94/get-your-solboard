@@ -6,7 +6,8 @@ This is my contribution to the Encode X Solana Hackathon 2023
 
 ## Screenshots
 
-
+![Screen1](/img/screen1.png)
+![Screen2](/img/screen2.png)
 
 ## How does it work?
 
