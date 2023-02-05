@@ -26,7 +26,7 @@ const NFT_URLS = require('nft_data/nft_urls.json')
 const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
 
-async function postExec(account: PublicKey, product: string, coupon): Promise<PostResponse> {
+async function postExec(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
 
   // Init
 

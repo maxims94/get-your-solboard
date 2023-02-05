@@ -12,7 +12,7 @@ export default function TransactionModal() {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
 
-  const openTransaction = event => {
+  const openTransaction = event: Event => {
     event.preventDefault()
 
     if (!connection || !publicKey) {
@@ -23,7 +23,7 @@ export default function TransactionModal() {
     setOpened(true)
   }
 
-  const performTransaction = async (event) => {
+  const performTransaction = async (event: Event) => {
     event.preventDefault()
     console.log("Perform Transaction")
 
