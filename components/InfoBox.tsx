@@ -10,8 +10,8 @@ export default function InfoBox() {
                 <li>Get some SOL using a faucet, such as <a href="https://solfaucet.com/">this one</a></li>
                 <li>Connect the wallet to this app</li>
                 <li>Start buying!</li>
-                <li>You will notice that, with every purchase, you also get an NFT.</li>
-                <li>Also, for purchases >= 0.5 SOL, you also get a coupon NFT which you can then redeem at your next buy!</li>
+                <li>You will notice that, with every purchase, you also get an NFT of the item you've purchased.</li>
+                <li>Also, for purchases >= 0.5 SOL, you also get a coupon NFT! It can be redeemed at the next buy to get a discount.</li>
             </ol>
             <br />
             <br />
