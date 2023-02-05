@@ -12,19 +12,17 @@ export default function TransactionModal() {
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
 
-  const openTransaction = event: Event => {
-    event.preventDefault()
+  const openTransaction = () => {
 
     if (!connection || !publicKey) {
       console.log("Not connected!")
-      return
+      return null
     }
 
     setOpened(true)
   }
 
-  const performTransaction = async (event: Event) => {
-    event.preventDefault()
+  const performTransaction = async () => {
     console.log("Perform Transaction")
 
     // TODO: Change state to "waiting for tx"
@@ -62,6 +60,7 @@ export default function TransactionModal() {
 
   return (
     <>
+    
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
@@ -100,10 +99,10 @@ export default function TransactionModal() {
           </Button>
         </Group>
       </Modal>
-
+    
       <div className={styles.ShopItem}>
         <a href="#" onClick={openTransaction}>TestItem</a>
       </div>
     </>
-  );
+  )
 }

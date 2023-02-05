@@ -67,8 +67,11 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
       lamports: LAMPORTS_PER_SOL * NFT_PRICES[product]
   })
 
+  const identitySigner = new GuestIdentityDriver(account)
+
   transactionBuilder.prepend({
-    instruction: sendSolInstruction
+    instruction: sendSolInstruction,
+    signers: [identitySigner]
   })
 
   // Convert
@@ -76,7 +79,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
   const latestBlockhash = await connection.getLatestBlockhash()
   const transaction = await transactionBuilder.toTransaction(latestBlockhash)
 
-  transaction.feePayer = account.publicKey
+  transaction.feePayer = account
 
   transaction.sign(shopKeypair, mintKeypair)
 
@@ -119,7 +122,7 @@ async function post(
     return
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error creating transaction: ' + error.toString() })
+    res.status(500).json({ error: 'Error creating transaction' })
     return
   }
 }
