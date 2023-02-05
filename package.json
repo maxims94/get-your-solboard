@@ -27,6 +27,7 @@
     "@mantine/next": "5.10.2",
     "@mantine/notifications": "5.10.2",
     "@mantine/prism": "5.10.2",
+    "@mantine/modals": "5.10.2",
     "@next/bundle-analyzer": "^13.1.6",
     "@solana/wallet-adapter-react": "^0.15.28",
     "@solana/wallet-adapter-react-ui": "^0.9.27",

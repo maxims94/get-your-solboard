@@ -1803,6 +1803,13 @@
   "resolved" "https://registry.npmjs.org/@mantine/hooks/-/hooks-5.10.2.tgz"
   "version" "5.10.2"
 
+"@mantine/modals@5.10.2":
+  "integrity" "sha512-hKd9UqHd2m+Qn5+5yMJmiFeykR+rdVlD3j9MxfjStu//NCCRSrnbj+3kgpyKn6zvZy8UV3Erg7wDzP56PgjldQ=="
+  "resolved" "https://registry.npmjs.org/@mantine/modals/-/modals-5.10.2.tgz"
+  "version" "5.10.2"
+  dependencies:
+    "@mantine/utils" "5.10.2"
+
 "@mantine/next@5.10.2":
   "integrity" "sha512-iuq2JwfY6EGVMVqO6qepX08Kwm1xZhofH3Y9h5+6Y50I4suqcUEFqNZYQyyQwqe4Y24YE2aPnN5k1v9aSzp+lQ=="
   "resolved" "https://registry.npmjs.org/@mantine/next/-/next-5.10.2.tgz"
