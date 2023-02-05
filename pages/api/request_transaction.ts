@@ -61,20 +61,86 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
     useNewMint: mintKeypair,
   })
 
-  const sendSolInstruction = SystemProgram.transfer({
-      fromPubkey: account,
-      toPubkey: shopKeypair.publicKey,
-      lamports: LAMPORTS_PER_SOL * NFT_PRICES[product]
-  })
+  if (coupon === undefined) {
 
-  const identitySigner = new GuestIdentityDriver(account)
+    const sendSolInstruction = SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: shopKeypair.publicKey,
+        lamports: LAMPORTS_PER_SOL * NFT_PRICES[product]
+    })
 
-  transactionBuilder.prepend({
-    instruction: sendSolInstruction,
-    signers: [identitySigner]
-  })
+    const identitySigner = new GuestIdentityDriver(account)
+
+    transactionBuilder.prepend({
+        instruction: sendSolInstruction,
+        signers: [identitySigner]
+    })
+
+  } else {
+    // TODO
+    // Check that coupon exists; retrieve its discount
+    
+    // SOL transaction with discount
+
+    // Burn the coupon
+  }
+
+  // Mint coupon
+  // Only if not a coupon is being used right now
+  // And the discount depends on the price (may be 0!)
+
+  let couponTransactionBuilder;
+  let mintCouponKeypair;
+  
+  if (coupon === undefined) {
+
+    let discount = 0
+    const productPrice = NFT_PRICES[product]
+    // const productPrice = 0.7
+    let couponName;
+    let couponUri;
+
+    if (productPrice >= 0.5) {
+        discount = 0.05
+        couponName = "SolBoards Coupon (0.05 SOL)"
+        couponUri = NFT_URLS["coupon_01_metadata"]
+    }
+
+    if (productPrice >= 0.6) {
+        discount = 0.1
+        couponName = "SolBoards Coupon (0.1 SOL)"
+        couponUri = NFT_URLS["coupon_02_metadata"]
+    }
+
+    if (productPrice > 0.7) {
+        discount = 0.1
+        couponName = "SolBoards Coupon (0.15 SOL)"
+        couponUri = NFT_URLS["coupon_03_metadata"]
+    }
+
+    if (discount != 0) {
+
+        console.log("create coupon")
+
+        mintCouponKeypair = Keypair.generate()
+
+        couponTransactionBuilder = await nfts.builders().create({
+            uri: couponUri,
+            name: couponName,
+            tokenOwner: account,
+            updateAuthority: shopKeypair,
+            sellerFeeBasisPoints: 0,
+            useNewMint: mintCouponKeypair,
+        })
+    } else {
+        console.log("no discount")
+    }
+
+  }
 
   // Convert
+
+  let output = {}
   
   const latestBlockhash = await connection.getLatestBlockhash()
   const transaction = await transactionBuilder.toTransaction(latestBlockhash)
@@ -88,9 +154,31 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
   })
   const transaction_base64 = serializedTransaction.toString('base64')
 
-  return {
-    transaction: transaction_base64
+  output['transaction'] = transaction_base64
+
+  // Convert (coupon)
+
+  if (couponTransactionBuilder !== undefined) {
+
+    console.log("Create coupon transaction")
+
+    const latestBlockhash = await connection.getLatestBlockhash()
+    const couponTransaction = await couponTransactionBuilder.toTransaction(latestBlockhash)
+
+    couponTransaction.feePayer = account
+
+    couponTransaction.sign(shopKeypair, mintCouponKeypair)
+
+    const serializedCouponTransaction = couponTransaction.serialize({
+        requireAllSignatures: false
+    })
+    const coupon_transaction_base64 = serializedCouponTransaction.toString('base64')
+
+    output['coupon_transaction'] = coupon_transaction_base64
+
   }
+
+  return output
 }
 
 async function post(

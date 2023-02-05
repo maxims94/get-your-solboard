@@ -44,7 +44,7 @@ export default function TransactionModal() {
     
     const data = await res.json()
 
-    // console.log(data)
+    console.log(data)
 
     const tx_base64 = data.transaction
     
@@ -55,6 +55,20 @@ export default function TransactionModal() {
     console.log("Send to wallet")
 
     sendTransaction(recoveredTransaction, connection)
+
+    if ('coupon_transaction' in data) {
+        console.log("Coupon tx found")
+
+        const coupon_tx_base64 = data.coupon_transaction
+        
+        const recoveredCouponTransaction = Transaction.from(
+            Buffer.from(coupon_tx_base64, "base64")
+        )
+
+        console.log("Send coupon tx to wallet")
+
+        sendTransaction(recoveredCouponTransaction, connection)
+    }
     
   }
 
