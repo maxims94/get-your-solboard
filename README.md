@@ -2,7 +2,7 @@
 
 ![Screen1](/img/screen1.png)
 
-An onlineshop for skateboards on Solana with a loyalty programme. The special thing about is that, during the checkout, you can select from a coupon NFTs that you have in your wallet and reedem them to get a discount. **You do that in the same window**. This is achieved by inventing an architecture that is similar to Solana Pay, but also crucially different (see below).
+This project is an onlineshop for skateboards on Solana with a loyalty programme. The special thing is that during checkout, you can select a coupon NFTs from your wallet to get a discount. **You do that before the transaction**. This is achieved by an architecture that is similar to Solana Pay, but also crucially different (see below).
 
 This is my contribution to the Encode X Solana Hackathon 2023
 
@@ -36,7 +36,7 @@ You can choose between the coupons that you own **in the same window** as you're
 
 Note that I tried to do that with Solana Pay, but couldn't find a way to transfer the public key of the customer early enough to the frontend.
 
-Ultimately I realized that **I was trying to force a technology onto a problem that it was not supposed to solve** -- and changed it!
+Ultimately I realized that **I was trying to force a technology onto a problem that it was not supposed to solve** -- and changed my approach!
 
 As a reminder: How does Solana Pay work? The server posts a link to an endpoint in the form of a QR code. The user scans it with their wallet. The wallet sends a POST request to the server with the pubkey of the user. The server then responds with a personalized transaction.
 
