@@ -1,12 +1,14 @@
 import styles from '../styles/Home.module.css'
 
+import { Image, Flex, Alert, IconAlertCircle } from '@mantine/core';
+
 import { useState } from 'react';
 import { Modal, Button, Group, Text, Title, Radio } from '@mantine/core';
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction } from '@solana/web3.js';
 
-export default function TransactionModal() {
+export default function ShopItem({ officialName, shortName, itemPrice }) {
   const [opened, setOpened] = useState(false);
   const [value, setValue] = useState('react');
   const { connection } = useConnection();
@@ -16,6 +18,7 @@ export default function TransactionModal() {
 
     if (!connection || !publicKey) {
       console.log("Not connected!")
+      alert("Connect to a wallet (e.g. PhantomWallet) and let's go!")
       return null
     }
 
@@ -115,7 +118,22 @@ export default function TransactionModal() {
       </Modal>
     
       <div className={styles.ShopItem}>
-        <a href="#" onClick={openTransaction}>TestItem</a>
+        <Flex mih={50}
+            gap="md"
+            justify="flex-start"
+            align="flex-start"
+            direction="column"
+            wrap="wrap"
+            >
+
+            <div style={{marginRight:20, marginBottom:20, borderRadius: 10, border: "1px solid #96daff",
+  padding: 20}}>
+                <a href="#">
+                <Image onClick={openTransaction} src={"/" + shortName + ".png"} alt={officialName} width={200}/>
+                </a>
+                <Text>{officialName} ({itemPrice} SOL)</Text>
+            </div>
+        </Flex>
       </div>
     </>
   )

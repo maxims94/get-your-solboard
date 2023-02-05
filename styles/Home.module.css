@@ -60,6 +60,7 @@
   flex-direction:row;
   align-items: flex-start;
   align-self: stretch;
+  flex-wrap:wrap;
 }
 
 .ShopItem {
@@ -73,6 +74,7 @@
   padding:25px;
   border-right: 1px solid #e8e8e8;
   align-self: stretch;
+  min-width:350px;
 }
 
 .InfoBox .title {
