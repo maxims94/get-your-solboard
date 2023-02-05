@@ -1,14 +1,14 @@
 # Get your SolBoard!
 
+![Screen1](/img/screen1.png)
+
 An onlineshop for skateboards on Solana with a loyalty programme. The special thing about is that, during the checkout, you can select from a coupon NFTs that you have in your wallet and reedem them to get a discount. **You do that in the same window**. This is achieved by inventing an architecture that is similar to Solana Pay, but also crucially different (see below).
 
 This is my contribution to the Encode X Solana Hackathon 2023
 
-## Screenshot 1
+Live: [[https://getyoursolboard.xyz]]
 
-![Screen1](/img/screen1.png)
-
-## Screenshot 2
+## Checkout screenshot
 
 ![Screen2](/img/screen2.png)
 
