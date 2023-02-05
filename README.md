@@ -2,7 +2,7 @@
 
 ![Screen1](/img/screen1.png)
 
-This project is an **onlineshop for skateboards on Solana with a loyalty programme**. The special thing is that during checkout, you can select a coupon NFTs from your wallet to get a discount. *You do that before the transaction is created*. This is achieved by an architecture that is similar to Solana Pay, but also crucially different (see below).
+This project is an **onlineshop for skateboards on Solana with a loyalty programme**. The special thing is that during checkout, you can select a coupon NFTs from your wallet to get a discount. You do that *before* the transaction is created and you can *decide* whether and which coupon to redeem. This is achieved using an architecture that is similar to Solana Pay, but also crucially different (see below).
 
 This is my contribution to the Encode X Solana Hackathon 2023
 
