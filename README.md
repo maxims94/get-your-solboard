@@ -12,19 +12,7 @@ You can only pay in SOL
 
 For every skateboard you purchase, you get an NFT of that skateboard for free
 
-## What is special about it?
-
-You can choose between the coupons that you own **in the same window** as you're making the purchase.
-
-Note that I tried to do that with Solana Pay, but couldn't find a way to transfer the public key of the customer early enough to the frontend. Ultimately I realized that **I was trying to force a technology onto a problem that it was not supposed to solve** -- and changed it!
-
-As a reminder: How does Solana Pay work? The server posts a link to an endpoint in the form of a QR code. The user scans it with their wallet. The wallet sends a POST request to the server with the pubkey of the user. The server then responds with a personalized transaction.
-
-What is the problem with this? **You can't introduce multiple steps**. Once the server has received the pubkey, it is forced to create a transaction immediately -- there is no real bidirectional interaction or back and forth with the user; the server can't query them about their preferences. And if you try to circumvent that (like I tried in multiple failed attempts), then the architecture becomes unwiedly and complicated and you end up setting up a persistence layer just to store user sessions. Makes no sense.
-
-How to solve it? **Get the wallet out of the way** and instead send POST requests to the server directly, containing all of the user's preferences. This leverages Solana's capability to do offline transactions. At the very end, when the user agrees to it, they can sign the (final) transaction.
-
-## Mechanism of the loyalty programme
+### Mechanism of the loyalty programme
 
 If the price of the item that you buy is high enough, you get a coupon that you can redeem for a discount.
 
@@ -34,3 +22,20 @@ However, if you use a coupon in a transaction, you are not eligible to receive a
 
 This is a way to reward brand loyalty
 
+## What is special about it?
+
+You can choose between the coupons that you own **in the same window** as you're making the purchase.
+
+Note that I tried to do that with Solana Pay, but couldn't find a way to transfer the public key of the customer early enough to the frontend.
+
+Ultimately I realized that **I was trying to force a technology onto a problem that it was not supposed to solve** -- and changed it!
+
+As a reminder: How does Solana Pay work? The server posts a link to an endpoint in the form of a QR code. The user scans it with their wallet. The wallet sends a POST request to the server with the pubkey of the user. The server then responds with a personalized transaction.
+
+**The problem: You can't introduce multiple steps**. Once the server has received the pubkey, it is forced to create a transaction immediately -- there is no real bidirectional interaction or back and forth with the user; the server can't query them about their preferences. And if you try to circumvent that (like I tried in multiple failed attempts), then the architecture becomes unwiedly and complicated and you end up setting up a persistence layer just to store user sessions. Makes no sense.
+
+One approach to solve it is to not go through a wallet and instead send POST requests to the server directly, containing all of the user's preferences (possibly multiple times). This leverages Solana's capability to do offline transactions (serialization and deserialization of transactions).
+
+## Cool idea for the future
+
+Right now, when you scan the QR code and send your public key, both parties expect that a transaction will take place *immediately* after. In my work I noticed that this is too hurried. It would be great if the user merely shared their public key, without having to transact. That is already valuable. Sharing your public key means giving the other party access to your entire transaction history, your interests and preferences (assuming crypto takes over). Merchants could use it to e.g. remove offers that have a low chance of succeeding with you anyway and focus more on areas with more chances of common ground.
