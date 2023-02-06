@@ -2,31 +2,42 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  text-align: left;
 }
 
 .AppHeader {
-  height: 90px;
   display: flex;
   border-bottom: 1px solid #e8e8e8;
+  justify-content: center;
+  padding: 0 50px;
+
+}
+
+.AppHeaderContainer {
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  font-size: 50px;
-  padding-left: 20px;
-  padding-right: 20px;
-  flex-wrap: wrap;
+  padding:40px 0;
+  flex-wrap: nowrap;
+  max-width:1400px;
+  flex-grow: 1;
 }
 
 .AppBody {
-  height: 100%;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
+  padding: 0 50px;
+}
+
+.AppBodyContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  max-width:1400px;
   flex-grow: 1;
 }
+
 
 .form {
   display: flex;
@@ -56,27 +67,92 @@
 
 .ShopArea {
   display:flex;
-  padding:25px;
-  flex-direction:row;
-  align-items: flex-start;
-  align-self: stretch;
+  padding:30px 0 30px 30px;
+}
+
+.ShopAreaContainer {
+  display:flex;
+  flex-direction: row;
   flex-wrap:wrap;
+  justify-content:center;
 }
 
 .ShopItem {
   display: flex;
+  margin-right:20px;
+  margin-bottom:20px;
+  font-size:20px;
+}
+
+.ShopItem:hover a {
+  border-color: #13B9EC;
+  box-shadow: 0px 0px 15px 0px #85D7F0;
+}
+
+.ShopItem a {
+  display: flex;
+  border-radius:7px;
+
+  border: 1px solid #85D7F0;
+
+  padding:18px 12px; 
+  align-items: center;
+  flex-direction: column;
+
+  background-color:white;
+
+  color: black;
+  text-decoration: none;
+
+  font-size: 20px;
+}
+
+.ShopItemDesc {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.ShopItemName {
+}
+.ShopItemPrice {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap:nowrap;
+  margin-left:15px;
+}
+
+.ShopItemPrice img {
+  margin-left:5px;
 }
 
 .InfoBox {
   display:flex;
   flex-direction:column;
-  align-items: center;
-  padding:25px;
+  align-items: left;
+  padding:30px 30px 30px 0;
   border-right: 1px solid #e8e8e8;
   align-self: stretch;
+  font-size: 18px;
+
+  max-width:350px;
   min-width:350px;
 }
 
-.InfoBox .title {
-  font-size:30px; 
+.InfoBox p {
+  margin:0;
+  padding:0;
+}
+
+.InfoBox ol {
+  margin:0;
+  padding: 0 0 0 15px;
+}
+
+.InfoBox h3 {
+  padding: 0;
+  margin: 0 0 15px 0;
+  font-size: 25px;
 }

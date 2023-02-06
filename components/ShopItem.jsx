@@ -36,22 +36,22 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
 
     const owner = new PublicKey(publicKey)
 
-    const allNFTs = await metaplex.nfts().findAllByOwner({owner});
+    const allNFTs = await metaplex.nfts().findAllByOwner({ owner });
 
     console.log(allNFTs);
 
     let result = []
 
     allNFTs.forEach(item => {
-        console.log(item.name)
-        if (item.name == "SolBoards Coupon (0.05 SOL)" || item.name == "SolBoards Coupon (0.1 SOL)" || item.name == "SolBoards Coupon (0.15 SOL)") {
-            console.log("APPEND")
-           result.push({
-            'value': item.mintAddress,
-            'name': item.name,
-            'label': item.name
-           })
-        }
+      console.log(item.name)
+      if (item.name == "SolBoards Coupon (0.05 SOL)" || item.name == "SolBoards Coupon (0.1 SOL)" || item.name == "SolBoards Coupon (0.15 SOL)") {
+        console.log("APPEND")
+        result.push({
+          'value': item.mintAddress,
+          'name': item.name,
+          'label': item.name
+        })
+      }
     })
 
     return result
@@ -66,11 +66,11 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
     }
 
     getCouponList(publicKey).then(tmpCouponList => {
-        setCouponList(tmpCouponList)
-        
-        setTotal(NFT_PRICES[shortName])
+      setCouponList(tmpCouponList)
 
-        setOpened(true)
+      setTotal(NFT_PRICES[shortName])
+
+      setOpened(true)
 
     })
   }
@@ -83,7 +83,7 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
     const req_body = {
       account: 'HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV',
       product: "skateboard_01",
-      coupon:"null"
+      coupon: "null"
     }
 
     const res = await fetch('/api/request_transaction', {
@@ -94,13 +94,13 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
       },
       body: JSON.stringify(req_body)
     })
-    
+
     const data = await res.json()
 
     console.log(data)
 
     const tx_base64 = data.transaction
-    
+
     const recoveredTransaction = Transaction.from(
       Buffer.from(tx_base64, "base64")
     )
@@ -110,29 +110,29 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
     sendTransaction(recoveredTransaction, connection)
 
     if ('coupon_transaction' in data) {
-        console.log("Coupon tx found")
+      console.log("Coupon tx found")
 
-        const coupon_tx_base64 = data.coupon_transaction
-        
-        const recoveredCouponTransaction = Transaction.from(
-            Buffer.from(coupon_tx_base64, "base64")
-        )
+      const coupon_tx_base64 = data.coupon_transaction
 
-        console.log("Send coupon tx to wallet")
+      const recoveredCouponTransaction = Transaction.from(
+        Buffer.from(coupon_tx_base64, "base64")
+      )
 
-        sendTransaction(recoveredCouponTransaction, connection)
+      console.log("Send coupon tx to wallet")
+
+      sendTransaction(recoveredCouponTransaction, connection)
     }
-    
+
   }
 
   const radioOptions = [<Radio value="null" label="No coupon" />]
   for (let i = 0; i < couponList.length; i++) {
-    radioOptions.push(<Radio value={couponList[i]['value']} label={couponList[i]['label']}/>)
+    radioOptions.push(<Radio value={couponList[i]['value']} label={couponList[i]['label']} />)
   }
 
   return (
     <>
-    
+
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
@@ -149,8 +149,8 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
           name="couponSelection"
           orientation="vertical"
         >
-            {radioOptions}
-          
+          {radioOptions}
+
         </Radio.Group>
 
         <br />
@@ -171,24 +171,18 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
           </Button>
         </Group>
       </Modal>
-    
-      <div className={styles.ShopItem}>
-        <Flex mih={50}
-            gap="md"
-            justify="flex-start"
-            align="flex-start"
-            direction="column"
-            wrap="wrap"
-            >
 
-            <div style={{marginRight:20, marginBottom:20, borderRadius: 10, border: "1px solid #96daff",
-  padding: 20}}>
-                <a href="#">
-                <Image onClick={openTransaction} src={"/" + shortName + ".png"} alt={officialName} width={200}/>
-                </a>
-                <Text>{officialName} ({itemPrice} SOL)</Text>
-            </div>
-        </Flex>
+      <div className={styles.ShopItem}>
+        <a href="#">
+          <Image onClick={openTransaction} src={"/" + shortName + ".png"} alt={officialName} width={200} height={200} fit="contain" />
+        <div className={styles.ShopItemDesc}>
+          <div className={styles.ShopItemName}>{officialName}</div>
+          <div className={styles.ShopItemPrice}>
+            {itemPrice}
+            <Image src={"/solana-sol-logo.svg"} alt={officialName} width={18} height={18} fit="contain" />
+          </div>
+        </div>
+        </a>
       </div>
     </>
   )

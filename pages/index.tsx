@@ -24,8 +24,10 @@ export default function HomePage() {
           <WalletContextProvider>
             <AppBar />
             <div className={styles.AppBody}>
+              <div className={styles.AppBodyContainer}>
                 <InfoBox />
                 <ShopArea />
+              </div>
             </div>
           </WalletContextProvider >
         </div>

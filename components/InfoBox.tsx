@@ -3,7 +3,11 @@ import styles from '../styles/Home.module.css'
 export default function InfoBox() {
     return (
         <div className={styles.InfoBox}>
-            <span className={styles.title}>How it works</span>
+            <h3>See what it does</h3>
+            <p>To see some screenshots of what it does, click <a href="TODO">here</a>.</p>
+            <br />
+            <br />
+            <h3>Test it yourself</h3>
             <ol>
                 <li>Download a wallet, like PhantomWallet</li>
                 <li>Switch to devnet</li>
@@ -15,14 +19,16 @@ export default function InfoBox() {
             </ol>
             <br />
             <br />
-            <span className={styles.title}>Why did I make this?</span>
+            <h3>Why did I make this?</h3>
             <ol>
-                <li>To learn practical skills with Solana</li>
-                <li>To try to push the idea behind Solana Pay to its limits</li>
+                <li>This is my contribution to the <a href="https://www.encode.club/encode-solana-hackathon">Encode x Solana hackathon</a></li>
+                <li>To learn how to use Solana</li>
+                <li>To push the idea behind Solana Pay to its limits</li>
                 <li>For fun!</li>
             </ol>
             <br />
             <br />
+            <h3>Links</h3>
             <p>
                 <a href="https://github.com/maxims94/get-your-solboard">GitHub</a> <a href="mailto:maxim.schmidt@tum.de">Email</a> <a href="https://twitter.com/maximschmidt94">Twitter</a>
             </p>

@@ -6,10 +6,10 @@ import Image from 'next/image'
 export default function AppBar() {
     return (
         <div className={styles.AppHeader}>
-            <div style={{padding:20}}>
+            <div className={styles.AppHeaderContainer}>
                 <img src="/solboards.png" />
+                <WalletMultiButton />
             </div>
-            <WalletMultiButton />
         </div>
     )
 }
