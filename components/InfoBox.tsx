@@ -3,10 +3,11 @@ import styles from '../styles/Home.module.css'
 export default function InfoBox() {
     return (
         <div className={styles.InfoBox}>
+          <div className={styles.InfoBoxContainer}>
             <h3>See what it does</h3>
             <p>To see some screenshots of what it does, click <a href="TODO">here</a>.</p>
-            <br />
-            <br />
+          </div>
+          <div className={styles.InfoBoxContainer}>
             <h3>Test it yourself</h3>
             <ol>
                 <li>Download a wallet, like PhantomWallet</li>
@@ -17,8 +18,8 @@ export default function InfoBox() {
                 <li>You will notice that, with every purchase, you also get an NFT of the item you've purchased.</li>
                 <li>Also, for purchases &gt;= 0.5 SOL, you also get a coupon NFT! It can be redeemed at the next buy to get a discount.</li>
             </ol>
-            <br />
-            <br />
+          </div>
+          <div className={styles.InfoBoxContainer}>
             <h3>Why did I make this?</h3>
             <ol>
                 <li>This is my contribution to the <a href="https://www.encode.club/encode-solana-hackathon">Encode x Solana hackathon</a></li>
@@ -26,12 +27,13 @@ export default function InfoBox() {
                 <li>To push the idea behind Solana Pay to its limits</li>
                 <li>For fun!</li>
             </ol>
-            <br />
-            <br />
+          </div>
+          <div className={styles.InfoBoxContainer}>
             <h3>Links</h3>
             <p>
                 <a href="https://github.com/maxims94/get-your-solboard">GitHub</a> <a href="mailto:maxim.schmidt@tum.de">Email</a> <a href="https://twitter.com/maximschmidt94">Twitter</a>
             </p>
+          </div>
         </div>
     )
 }

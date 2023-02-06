@@ -141,6 +141,10 @@
   min-width:350px;
 }
 
+.InfoBoxContainer {
+  margin-bottom: 25px;
+}
+
 .InfoBox p {
   margin:0;
   padding:0;
