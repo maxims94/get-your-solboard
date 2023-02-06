@@ -82,14 +82,15 @@
   margin-right:20px;
   margin-bottom:20px;
   font-size:20px;
+  cursor: pointer;
 }
 
-.ShopItem:hover a {
+.ShopItemInner:hover {
   border-color: #13B9EC;
   box-shadow: 0px 0px 15px 0px #85D7F0;
 }
 
-.ShopItem a {
+.ShopItemInner {
   display: flex;
   border-radius:7px;
 
@@ -100,9 +101,6 @@
   flex-direction: column;
 
   background-color:white;
-
-  color: black;
-  text-decoration: none;
 
   font-size: 20px;
 }

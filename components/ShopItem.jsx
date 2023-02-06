@@ -61,11 +61,11 @@ export default function ShopItem({ officialName, shortName, itemPrice, setNotifi
 
     if (!connection || !publicKey) {
       console.log("Not connected!")
-      alert("Connect to a wallet (e.g. PhantomWallet) and let's go!")
+      alert("Connect to a wallet and let's go!")
       return null
     }
 
-    setNotifier({is_active: true, text: 'Check for coupons...'})
+    setNotifier({is_active: true, text: 'Checking for coupons...'})
 
     getCouponList(publicKey).then(tmpCouponList => {
       setCouponList(tmpCouponList)
@@ -179,16 +179,16 @@ export default function ShopItem({ officialName, shortName, itemPrice, setNotifi
       </Modal>
 
       <div className={styles.ShopItem}>
-        <a href="#">
+        <div className={styles.ShopItemInner}>
           <Image onClick={openTransaction} src={"/" + shortName + ".png"} alt={officialName} width={200} height={200} fit="contain" />
-        <div className={styles.ShopItemDesc}>
-          <div className={styles.ShopItemName}>{officialName}</div>
-          <div className={styles.ShopItemPrice}>
-            {itemPrice}
-            <Image src={"/solana-sol-logo.svg"} alt={officialName} width={18} height={18} fit="contain" />
+          <div className={styles.ShopItemDesc}>
+            <div className={styles.ShopItemName}>{officialName}</div>
+            <div className={styles.ShopItemPrice}>
+              {itemPrice}
+              <Image src={"/solana-sol-logo.svg"} alt={officialName} width={18} height={18} fit="contain" />
+            </div>
           </div>
         </div>
-        </a>
       </div>
     </>
   )
