@@ -6,7 +6,7 @@ This project is an **onlineshop for skateboards on Solana with a loyalty program
 
 This is my contribution to the Encode X Solana Hackathon 2023
 
-Live: [[https://getyoursolboard.xyz]]
+Live: https://getyoursolboard.xyz
 
 ## Checkout screenshot
 
