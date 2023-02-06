@@ -13,7 +13,7 @@ import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
 
 const NFT_PRICES = require('nft_data/nft_prices.json')
 
-export default function ShopItem({ officialName, shortName, itemPrice }) {
+export default function ShopItem({ officialName, shortName, itemPrice, setNotifier }) {
 
   const [opened, setOpened] = useState(false);
   const [coupon, setCoupon] = useState('react');
@@ -65,12 +65,16 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
       return null
     }
 
+    setNotifier({is_active: true, text: 'Check for coupons...'})
+
     getCouponList(publicKey).then(tmpCouponList => {
       setCouponList(tmpCouponList)
 
       setTotal(NFT_PRICES[shortName])
 
       setOpened(true)
+
+      setNotifier({is_active: false, text: ''})
 
     })
   }
@@ -138,9 +142,10 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
         onClose={() => setOpened(false)}
         title="Checkout"
         centered
-        overlayColor={'#87ffa7'}
-        overlayOpacity={0}
+        overlayColor={"black"}
+        overlayOpacity={0.2}
         overlayBlur={0}
+        shadow="0px 0px 1px 1px #228BE6"
       >
         <Title order={2}>Select coupon</Title>
         <Radio.Group
@@ -150,6 +155,7 @@ export default function ShopItem({ officialName, shortName, itemPrice }) {
           orientation="vertical"
         >
           {radioOptions}
+
 
         </Radio.Group>
 
