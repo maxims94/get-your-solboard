@@ -5,7 +5,7 @@ export default function InfoBox() {
         <div className={styles.InfoBox}>
           <div className={styles.InfoBoxContainer}>
             <h3>See what it does</h3>
-            <p>To see some screenshots of what it does, click <a href="TODO">here</a>.</p>
+            <p>To see some screenshots, click <a href="TODO">here</a>.</p>
           </div>
           <div className={styles.InfoBoxContainer}>
             <h3>Test it yourself</h3>

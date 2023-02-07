@@ -52,6 +52,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
   const mintKeypair = Keypair.generate()
 
+  // TODO: it should NOT create a Collection NFT!
   const transactionBuilder = await nfts.builders().create({
     uri: NFT_URLS[product + "_metadata"],
     name: NFT_NAMES[product],
@@ -60,6 +61,8 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
     sellerFeeBasisPoints: 100,
     useNewMint: mintKeypair,
   })
+
+  // Case: No coupon
 
   if (coupon === undefined) {
 

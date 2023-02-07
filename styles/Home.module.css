@@ -158,3 +158,11 @@
   margin: 0 0 15px 0;
   font-size: 25px;
 }
+
+.checkoutSection {
+  margin-bottom:35px;
+}
+
+.checkoutSection p {
+  margin:10px 0;
+}
