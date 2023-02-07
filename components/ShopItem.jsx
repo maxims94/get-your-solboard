@@ -16,7 +16,7 @@ export default function ShopItem({ officialName, shortName, itemPrice, onClick }
           <div className={styles.ShopItemName}>{officialName}</div>
           <div className={styles.ShopItemPrice}>
             {itemPrice}
-            <Image src={"/solana-sol-logo.svg"} alt={officialName} width={18} height={18} fit="contain" />
+            <Image src="/solana-sol-logo.svg" alt="SOL" width={18} height={18} fit="contain" />
           </div>
         </div>
       </div>
