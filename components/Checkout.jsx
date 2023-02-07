@@ -10,25 +10,20 @@ import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
 const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
 
-export default function Checkout({ itemId, couponList, onConfirm, onCancel }) {
+export default function Checkout({ itemId, opened, couponList, onConfirm, onCancel }) {
     
   // The currently selected coupon as index in couponList
   // -1 = no coupon
   const [coupon, setCoupon] = useState('-1');
 
-  const [getCouponMessage, setGetCouponMessage] = useState('');
-  const [totalMessage, setTotalMessage] = useState('');
+  const [couponMessage, setCouponMessage] = useState(undefined);
+  const [totalMessage, setTotalMessage] = useState(undefined);
 
   if (itemId == null) {
     return null
   }
 
   // Display checkout
-
-  if (!connection || !publicKey) {
-    console.log("Error: Not connected!")
-    return null
-  }
 
   const onCouponChange = (newCoupon) => {
     setCoupon(newCoupon)
@@ -59,34 +54,41 @@ export default function Checkout({ itemId, couponList, onConfirm, onCancel }) {
     }
 
     setTotalMessage(null)
-    setGetCouponMessage(null)
+    setCouponMessage(null)
 
     if (couponDiscount == null) {
-      setTotalMessage(<p>Total sum: <b>{productPrice} SOL</b>.</p>)
+      setTotalMessage(<p>Total sum: <b>{productPrice} SOL</b></p>)
     } else {
       setTotalMessage(<p>Total sum: <b>{productPrice - couponDiscount} SOL</b> ({productPrice} SOL - {couponDiscount} SOL)</p>)
     }
 
-    if (getNewCouponDiscount != null)
+    if (newCoupon == '-1')
     {
       if (getNewCouponDiscount != 0) {
-        setGetCouponMessage(<p>As a thank you, you get a coupon worth <b>{getNewCouponDiscount} SOL</b>!</p>)
+        setCouponMessage(<p>As a thank you, you'll get a coupon worth <b>{getNewCouponDiscount} SOL</b>!</p>)
       } else {
-        setGetCouponMessage(<p>Unfortunately, you don't get a coupon with this purchase.</p>)
+        setCouponMessage(<p>Unfortunately, you don't get a coupon with this purchase.</p>)
       }
+    } else {
+      const explorer_link = `https://explorer.solana.com/address/${couponList[newCoupon]['mintAddress']}?cluster=devnet`
+
+      setCouponMessage(
+        <p>With this purchase, you will redeem <a href={explorer_link} target="_blank" className={styles.checkoutNormalLink}>this</a> coupon. The NFT will be burnt.</p>
+      )
     }
   }
 
-  if (totalMessage == '') {
+  if (totalMessage === undefined) {
     onCouponChange(coupon)
   }
 
   return (
 
       <Modal
-        opened={true}
+        opened={opened}
         onClose={onCancel}
-        title="Checkout"
+
+        title={<Title order={1}>Checkout</Title>}
         centered
         overlayColor={"black"}
         overlayOpacity={0.2}
@@ -95,22 +97,7 @@ export default function Checkout({ itemId, couponList, onConfirm, onCancel }) {
       >
 
         <div className={styles.checkoutSection}>
-          <Title order={2}>Coupon NFTs</Title>
-          <p>View in Solana Explorer:</p>
-          {
-            couponList.map(function(item){
-
-              let mintAddress = item['mintAddress']; 
-              let name = item['name']; 
-
-              return <p><a href={`https://explorer.solana.com/address/${mintAddress}?cluster=devnet`} target="_blank">{name}</a></p>
-            })
-          }
-        </div>
-
-        <div className={styles.checkoutSection}>
           <Title order={2}>Select coupon</Title>
-
           <Radio.Group
             value={coupon}
             onChange={onCouponChange}
@@ -118,10 +105,29 @@ export default function Checkout({ itemId, couponList, onConfirm, onCancel }) {
             orientation="vertical"
           >
             <Radio size="md" key="-1" value="-1" label="No coupon" />
-
+            
             {
               couponList.map(function(item, i) {
-                return <Radio size="md" key={item['mintAddress']} value={String(i)} label={`${item.name}`}/>
+
+                const explorer_link = `https://explorer.solana.com/address/${item['mintAddress']}?cluster=devnet`
+
+                return [
+                  <Radio
+                    size="md"
+                    key={item['mintAddress']}
+                    value={String(i)}
+                    label={`${item.name}`}
+                    description={
+                      <a
+                        href={explorer_link}
+                        target="_blank"
+                        className={styles.checkoutSelectCouponExplorerLink}
+                      >
+                      View in Solana Explorer
+                      </a>
+                    }
+                  />
+                ]
               })
             }
 
@@ -130,11 +136,11 @@ export default function Checkout({ itemId, couponList, onConfirm, onCancel }) {
 
         <div className={styles.checkoutSection}>
 
-          <Title order={2}>Total</Title>
+          <Title order={2}>Summary</Title>
 
           <p>Selected item: <b>{NFT_NAMES[itemId]}</b></p>
           {totalMessage}
-          {getCouponMessage}
+          {couponMessage}
         </div>
 
         <Group position="right">

@@ -28,6 +28,8 @@ export default function ShopArea() {
   const [notifier, setNotifier] = useState({is_active: false, text: null});
   const [alertState, setAlertState] = useState({is_active: false, text: null});
 
+  const [checkoutOpened, setCheckoutOpened] = useState(false);
+
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
 
@@ -106,17 +108,22 @@ export default function ShopArea() {
       setNotifier({is_active: false, text: ''})
 
       setCheckoutItemId(itemId)
+      setCheckoutOpened(true)
     })
   }
 
   // User closed the checkout window without sending a transaction
-  const onCheckoutCancel = () => {
+  const onCheckoutCancel = (event) => {
     console.log("Checkout cancelled")
+    setCheckoutItemId(null)
+    setCheckoutOpened(false)
   }
   
   // User confirmed the checkout
   const onCheckoutConfirm = (selectedOption) => {
     console.log("Checkout confirmed with option:", selectedOption)
+    setCheckoutItemId(null)
+    setCheckoutOpened(false)
   }
 
   const performTransaction = async () => {
@@ -201,7 +208,7 @@ export default function ShopArea() {
 
       <LoadingNotification state={notifier} />
       <AlertNotification state={alertState} />
-      <Checkout itemId={checkoutItemId} couponList={checkoutCouponList} onConfirm={onCheckoutConfirm} onCancel={onCheckoutCancel}/>
+      <Checkout itemId={checkoutItemId} opened={checkoutOpened} couponList={checkoutCouponList} onConfirm={onCheckoutConfirm} onCancel={onCheckoutCancel}/>
     </>
   )
 }

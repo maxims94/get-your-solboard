@@ -112,8 +112,10 @@
   align-items: center;
   margin-top: 20px;
 }
+
 .ShopItemName {
 }
+
 .ShopItemPrice {
   display: flex;
   flex-direction: row;
@@ -124,6 +126,34 @@
 
 .ShopItemPrice img {
   margin-left:5px;
+}
+
+.checkoutSection {
+  margin-bottom:35px;
+}
+
+.checkoutSection p {
+  margin:10px 0;
+}
+
+.checkoutSelectCouponExplorerLink {
+  font-size: 14px;
+  color: grey;
+  text-decoration:none;
+}
+
+.checkoutSelectCouponExplorerLink:hover {
+  text-decoration:underline;
+}
+
+.checkoutNormalLink {
+  color: black;
+  text-decoration:underline;
+}
+
+.checkoutTitle {
+  font-size: 14px;
+  color: grey;
 }
 
 .InfoBox {
@@ -157,12 +187,4 @@
   padding: 0;
   margin: 0 0 15px 0;
   font-size: 25px;
-}
-
-.checkoutSection {
-  margin-bottom:35px;
-}
-
-.checkoutSection p {
-  margin:10px 0;
 }
