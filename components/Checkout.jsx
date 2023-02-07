@@ -7,13 +7,10 @@ import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
 import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction } from '@solana/web3.js';
-
 const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
 
-export default function Checkout({ itemId, couponList, setNotifier, onSuccess, onFailure, onCancel }) {
+export default function Checkout({ itemId, couponList, onConfirm, onCancel }) {
     
   // The currently selected coupon as index in couponList
   // -1 = no coupon
@@ -21,61 +18,6 @@ export default function Checkout({ itemId, couponList, setNotifier, onSuccess, o
 
   const [getCouponMessage, setGetCouponMessage] = useState('');
   const [totalMessage, setTotalMessage] = useState('');
-
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
-
-
-  const performTransaction = async () => {
-    console.log("Perform Transaction")
-
-    // TODO: Change state to "waiting for tx"
-    // let mintAddress = couponList[i]['mintAddress']; 
-
-    const req_body = {
-      account: 'HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV',
-      product: "skateboard_01",
-      coupon: "null"
-    }
-
-    const res = await fetch('/api/request_transaction', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(req_body)
-    })
-
-    const data = await res.json()
-
-    console.log(data)
-
-    const tx_base64 = data.transaction
-
-    const recoveredTransaction = Transaction.from(
-      Buffer.from(tx_base64, "base64")
-    )
-
-    console.log("Send to wallet")
-
-    sendTransaction(recoveredTransaction, connection)
-
-    if ('coupon_transaction' in data) {
-      console.log("Coupon tx found")
-
-      const coupon_tx_base64 = data.coupon_transaction
-
-      const recoveredCouponTransaction = Transaction.from(
-        Buffer.from(coupon_tx_base64, "base64")
-      )
-
-      console.log("Send coupon tx to wallet")
-
-      sendTransaction(recoveredCouponTransaction, connection)
-    }
-
-  }
 
   if (itemId == null) {
     return null
@@ -179,7 +121,7 @@ export default function Checkout({ itemId, couponList, setNotifier, onSuccess, o
 
             {
               couponList.map(function(item, i) {
-                return <Radio size="md" key={String(i)} value={String(i)} label={`${item.name}`}/>
+                return <Radio size="md" key={item['mintAddress']} value={String(i)} label={`${item.name}`}/>
               })
             }
 
@@ -199,7 +141,7 @@ export default function Checkout({ itemId, couponList, setNotifier, onSuccess, o
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="filled" color="dark" onClick={performTransaction}>Pay</Button>
+          <Button variant="filled" color="dark" onClick={() => onConfirm(coupon)}>Pay</Button>
         </Group>
       </Modal>
   )

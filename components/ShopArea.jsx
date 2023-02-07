@@ -14,6 +14,8 @@ import { useState } from 'react';
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
+import { Transaction } from '@solana/web3.js';
+
 import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
@@ -107,17 +109,65 @@ export default function ShopArea() {
     })
   }
 
-  const onCancel = () => {
-    setCheckoutItemId(null)
+  // User closed the checkout window without sending a transaction
+  const onCheckoutCancel = () => {
+    console.log("Checkout cancelled")
   }
   
-  const onSuccess = () => {
-    // alertstate
-    setCheckoutItemId(null)
+  // User confirmed the checkout
+  const onCheckoutConfirm = (selectedOption) => {
+    console.log("Checkout confirmed with option:", selectedOption)
   }
 
-  const onFailure = () => {
-    setCheckoutItemId(null)
+  const performTransaction = async () => {
+    console.log("Perform Transaction")
+
+    // TODO: Change state to "waiting for tx"
+    // let mintAddress = couponList[i]['mintAddress']; 
+
+    const req_body = {
+      account: 'HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV',
+      product: "skateboard_01",
+      coupon: "null"
+    }
+
+    const res = await fetch('/api/request_transaction', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(req_body)
+    })
+
+    const data = await res.json()
+
+    console.log(data)
+
+    const tx_base64 = data.transaction
+
+    const recoveredTransaction = Transaction.from(
+      Buffer.from(tx_base64, "base64")
+    )
+
+    console.log("Send to wallet")
+
+    sendTransaction(recoveredTransaction, connection)
+
+    if ('coupon_transaction' in data) {
+      console.log("Coupon tx found")
+
+      const coupon_tx_base64 = data.coupon_transaction
+
+      const recoveredCouponTransaction = Transaction.from(
+        Buffer.from(coupon_tx_base64, "base64")
+      )
+
+      console.log("Send coupon tx to wallet")
+
+      sendTransaction(recoveredCouponTransaction, connection)
+    }
+
   }
 
   const generateShopItem = (number) => {
@@ -151,7 +201,7 @@ export default function ShopArea() {
 
       <LoadingNotification state={notifier} />
       <AlertNotification state={alertState} />
-      <Checkout itemId={checkoutItemId} couponList={checkoutCouponList} onSuccess={onSuccess} onFailure={onFailure} onCancel={onCancel}/>
+      <Checkout itemId={checkoutItemId} couponList={checkoutCouponList} onConfirm={onCheckoutConfirm} onCancel={onCheckoutCancel}/>
     </>
   )
 }
