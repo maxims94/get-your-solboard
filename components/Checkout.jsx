@@ -73,7 +73,8 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
       const explorer_link = `https://explorer.solana.com/address/${couponList[newCoupon]['mintAddress']}?cluster=devnet`
 
       setCouponMessage(
-        <p>With this purchase, you will redeem <a href={explorer_link} target="_blank" className={styles.checkoutNormalLink}>this</a> coupon. The NFT will be burnt.</p>
+        <p>With this purchase, you will redeem this coupon. The NFT will be burnt.</p>
+        //<p>With this purchase, you will redeem <a href={explorer_link} target="_blank" className={styles.checkoutNormalLink}>this</a> coupon. The NFT will be burnt.</p>
       )
     }
   }
@@ -88,7 +89,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
         opened={opened}
         onClose={onCancel}
 
-        title={<Title order={1}>Checkout</Title>}
+        title={<Title order={2}>Checkout</Title>}
         centered
         overlayColor={"black"}
         overlayOpacity={0.2}
@@ -97,7 +98,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
       >
 
         <div className={styles.checkoutSection}>
-          <Title order={2}>Select coupon</Title>
+          <Title order={3}>Select coupon</Title>
           <Radio.Group
             value={coupon}
             onChange={onCouponChange}
@@ -136,7 +137,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
 
         <div className={styles.checkoutSection}>
 
-          <Title order={2}>Summary</Title>
+          <Title order={3}>Summary</Title>
 
           <p>Selected item: <b>{NFT_NAMES[itemId]}</b></p>
           {totalMessage}

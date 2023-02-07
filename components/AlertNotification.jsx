@@ -1,19 +1,37 @@
-import { Notification } from '@mantine/core';
+import { Alert, Notification } from '@mantine/core';
+import { IconCheck, IconX } from '@tabler/icons';
+import { useState, useEffect } from 'react';
 
-export default function AlertNotification({state}) {
-  return state.is_active ? (
-    <div className="LoadingNotification">
-      <Notification
-        loading
-        title={state.text}
-        disallowClose
-      >
-      </Notification>
-    </div>
-  ) : null
+const MAX_DURATION = 5000
+
+export default function AlertNotification({ state }) {
+  const [show, setShow] = useState(!!state.text);
+
+  useEffect(() => {
+    if (state.text) {
+      setShow(true);
+      const timer = setTimeout(() => {setShow(false)}, MAX_DURATION);
+      return () => {clearTimeout(timer)};
+    }
+  }, [state.text]);
   
-  return state.is_active? (
-    <Alert icon={<IconAlertCircle size={16} />} title="{state.text}" color="red" variant="filled">
-    </Alert>
-  ) : null
-}
+  if (state.text == null) {
+    return null
+  }
+
+  if (show) {
+
+    //const onCloseHandler = () => setShow(false)
+    const onCloseHandler = () => {}
+    const icon = state.is_error ? <IconX size={18} /> : <IconCheck size={18} />
+    const color = state.is_error ? "red" : "teal"
+
+    return (
+      <Notification icon={icon} color={color} className="AlertNotification" onClose={onCloseHandler}>
+        <span className="AlertNotificationText">{state.text}</span>
+      </Notification>
+    )
+  }
+
+  return null
+};

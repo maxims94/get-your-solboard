@@ -6,8 +6,6 @@ import base58 from 'bs58'
 import * as dotenv from "dotenv"
 dotenv.config()
 
-// console.log(process.env)
-
 type InputData = {
   account: string,
   product: string,

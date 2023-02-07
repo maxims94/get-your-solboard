@@ -26,7 +26,8 @@ export default function ShopArea() {
   const [checkoutCouponList, setCheckoutCouponList] = useState([]);
   const [checkoutItemId, setCheckoutItemId] = useState(null);
   const [notifier, setNotifier] = useState({is_active: false, text: null});
-  const [alertState, setAlertState] = useState({is_active: false, text: null});
+  //const [alertState, setAlertState] = useState({text: null, is_error: true});
+  const [alertState, setAlertState] = useState({text: 'This is an error!', is_error: true});
 
   const [checkoutOpened, setCheckoutOpened] = useState(false);
 
@@ -48,15 +49,11 @@ export default function ShopArea() {
 
     const allNFTs = await metaplex.nfts().findAllByOwner({ owner });
 
-    console.log(allNFTs);
-
     let result = []
 
     for(let i = 0; i < allNFTs.length; i++) {
 
       let item = allNFTs[i]
-
-      console.log(item.name)
 
       if (item.updateAuthorityAddress.toBase58() != SHOP_PUBLIC_KEY) {
         continue
@@ -87,8 +84,6 @@ export default function ShopArea() {
       }
     }
 
-    console.log(result)
-
     return result
   }
 
@@ -99,6 +94,8 @@ export default function ShopArea() {
       alert("Connect to a wallet and let's go!")
       return null
     }
+
+    // TODO: If a transaction is being requested
 
     setNotifier({is_active: true, text: 'Checking for coupons...'})
 
@@ -124,9 +121,12 @@ export default function ShopArea() {
     console.log("Checkout confirmed with option:", selectedOption)
     setCheckoutItemId(null)
     setCheckoutOpened(false)
+
+    console.log("set alert state")
+    setAlertState({text: "confirm", is_error: false})
   }
 
-  const performTransaction = async () => {
+  const requestTransaction = async () => {
     console.log("Perform Transaction")
 
     // TODO: Change state to "waiting for tx"
@@ -207,7 +207,7 @@ export default function ShopArea() {
       </div>
 
       <LoadingNotification state={notifier} />
-      <AlertNotification state={alertState} />
+      <AlertNotification  state={alertState} />
       <Checkout itemId={checkoutItemId} opened={checkoutOpened} couponList={checkoutCouponList} onConfirm={onCheckoutConfirm} onCancel={onCheckoutCancel}/>
     </>
   )

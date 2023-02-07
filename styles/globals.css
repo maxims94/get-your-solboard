@@ -13,13 +13,30 @@ code {
 }
 
 .LoadingNotification {
-  display: block;
   position: fixed;
   bottom:25px;
   right:25px;
   width:500px;
 }
 
+/*
 .LoadingNotification>div {
   border: 1px solid #13B9EC;
+  font-size:80px;
+}
+*/
+
+.LoadingNotificationText {
+  font-size:16px;
+}
+
+.AlertNotification {
+  position: fixed;
+  bottom:25px;
+  right:25px;
+  width:500px;
+}
+
+.AlertNotificationText {
+  font-size:16px;
 }

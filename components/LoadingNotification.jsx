@@ -5,9 +5,9 @@ export default function LoadingNotification({state}) {
     <div className="LoadingNotification">
       <Notification
         loading
-        title={state.text}
         disallowClose
       >
+        <span className="LoadingNotificationText">{state.text}</span>
       </Notification>
     </div>
   ) : null

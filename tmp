@@ -1,0 +1,3 @@
+
+    <Alert className="AlertNotification" icon={<IconAlertCircle size={16} />} title={state.text} color={state.is_error ? "red" : "green"} variant="light" withCloseButton>
+    </Alert>
