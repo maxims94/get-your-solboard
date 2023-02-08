@@ -95,7 +95,7 @@ export default function ShopArea() {
 
     if (!connection || !publicKey) {
       console.log("Not connected!")
-      alert("Connect to a wallet and let's go!")
+      alert("Connect a wallet and let's go!")
       return null
     }
 
