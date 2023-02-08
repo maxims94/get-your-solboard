@@ -12,8 +12,15 @@ type InputData = {
   coupon: string
 }
 
+type PostResponseTx = {
+  label: string
+  data: string
+}
+
 export type PostResponse = {
-  transaction: string
+  status: string,
+  message?: string,
+  tx?: PostResponseTx[]
 }
 
 export type PostError = {
@@ -25,7 +32,7 @@ const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
 
 // Creates a simple test transaction
-async function postExecSimple(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
+async function postExecSimple(account: PublicKey, product: string, coupon: PublicKey | undefined): Promise<PostResponse> {
 
   // Init
 
@@ -60,19 +67,24 @@ async function postExecSimple(account: PublicKey, product: string, coupon: any):
 
   const serializedTx = sendSolTx.serialize({ requireAllSignatures: false })
 
-  const output = {
+  const responseTx : PostResponseTx[] = [];
+
+  const output:PostResponse = {
     'status': 'success',
-    'tx': []
+    'tx': responseTx
   }
 
+  /*
   output['tx'].push({
     'label': 'test_tx',
     'data': serializedTx.toString('base64')
   })
+  */
 
   return output
 }
 
+/*
 async function postExec(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
 
   // Init
@@ -230,6 +242,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
   return output
 }
+*/
 
 async function post(
   req: NextApiRequest,
@@ -261,7 +274,7 @@ async function post(
     return
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: 'error', message: 'Error creating transaction: ' + error.message})
+    res.status(500).json({ status: 'error', message: 'Error creating transaction: ' + String(error)})
     return
   }
 }
