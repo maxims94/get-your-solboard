@@ -19,12 +19,12 @@ type PostResponseTx = {
 
 export type PostResponse = {
   status: string,
-  message?: string,
-  tx?: PostResponseTx[]
+  tx: PostResponseTx[]
 }
 
 export type PostError = {
-  error: string
+  status: string,
+  message: string
 }
 
 const NFT_URLS = require('nft_data/nft_urls.json')
@@ -67,19 +67,17 @@ async function postExecSimple(account: PublicKey, product: string, coupon: Publi
 
   const serializedTx = sendSolTx.serialize({ requireAllSignatures: false })
 
-  const responseTx : PostResponseTx[] = [];
+  const responseTxArr : PostResponseTx[] = [];
 
   const output:PostResponse = {
-    'status': 'success',
-    'tx': responseTx
+    status: 'success',
+    tx: responseTxArr,
   }
 
-  /*
-  output['tx'].push({
-    'label': 'test_tx',
-    'data': serializedTx.toString('base64')
+  output.tx.push({
+    label: 'test_tx',
+    data: serializedTx.toString('base64')
   })
-  */
 
   return output
 }
@@ -254,7 +252,7 @@ async function post(
   const { account, product, coupon } = req.body as InputData
 
   if (!account || !product || !coupon) {
-    res.status(400).json({ error: "Invalid request" })
+    res.status(400).json({ status: 'error', message: "Invalid request" })
     return
   }
 
@@ -274,7 +272,9 @@ async function post(
     return
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: 'error', message: 'Error creating transaction: ' + String(error)})
+
+    const errorResponse: PostError = { status: 'error', message: 'Error creating transaction: ' + String(error)}
+    res.status(500).json(errorResponse)
     return
   }
 }
@@ -286,6 +286,6 @@ export default async function handler(
   if (req.method === "POST") {
     return await post(req, res)
   } else {
-    return res.status(405).json({ error: "Method not allowed" })
+    return res.status(405).json({ status: 'error', message: "Method not allowed" })
   }
 }
