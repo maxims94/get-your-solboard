@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
+import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js"
 import { getOrCreateAssociatedTokenAccount, createTransferCheckedInstruction, getMint } from "@solana/spl-token"
 import { GuestIdentityDriver, keypairIdentity, Metaplex } from "@metaplex-foundation/js"
 import base58 from 'bs58'
@@ -23,6 +23,55 @@ export type PostError = {
 const NFT_URLS = require('nft_data/nft_urls.json')
 const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
+
+// Creates a simple test transaction
+async function postExecSimple(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
+
+  // Init
+
+  const shopPrivateKey = process.env.SHOP_PRIVATE_KEY
+  if (!shopPrivateKey) throw new Error('SHOP_PRIVATE_KEY not found')
+
+  const clusterUrl = process.env.CLUSTER_URL
+  if (!clusterUrl) throw new Error('CLUSTER_URL not found')
+
+  const shopKeypair = Keypair.fromSecretKey(base58.decode(shopPrivateKey))
+
+  const connection = new Connection(clusterUrl)
+
+  // Build Tx
+
+  const sendSolTx = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: shopKeypair.publicKey,
+      lamports: LAMPORTS_PER_SOL * 0.1
+    })
+  )
+
+  sendSolTx.feePayer = account
+
+  // Shop doesn't need to sign
+
+  const latestBlockhash = await connection.getLatestBlockhash()
+  sendSolTx.recentBlockhash = latestBlockhash.blockhash
+
+  console.log(sendSolTx.recentBlockhash)
+
+  const serializedTx = sendSolTx.serialize({ requireAllSignatures: false })
+
+  const output = {
+    'status': 'success',
+    'tx': []
+  }
+
+  output['tx'].push({
+    'label': 'test_tx',
+    'data': serializedTx.toString('base64')
+  })
+
+  return output
+}
 
 async function postExec(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
 
@@ -139,7 +188,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
   }
 
-  // Convert
+  // Serialize
 
   let output = {'transaction': '', 'coupon_transaction': ''}
   
@@ -157,7 +206,7 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
   output['transaction'] = transaction_base64
 
-  // Convert (coupon)
+  // Serialize (coupon)
 
   if (couponTransactionBuilder !== undefined) {
 
@@ -205,13 +254,14 @@ async function post(
 
     let couponPubKey = coupon != 'null' ? new PublicKey(coupon) : undefined;
 
-    const transactionOutputData = await postExec(accountPubKey, product, couponPubKey);
+    //const transactionOutputData = await postExec(accountPubKey, product, couponPubKey);
+    const transactionOutputData = await postExecSimple(accountPubKey, product, couponPubKey);
 
     res.status(200).json(transactionOutputData)
     return
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error creating transaction' })
+    res.status(500).json({ status: 'error', message: 'Error creating transaction: ' + error.message})
     return
   }
 }

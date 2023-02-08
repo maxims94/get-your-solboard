@@ -26,10 +26,14 @@ export default function ShopArea() {
   const [checkoutCouponList, setCheckoutCouponList] = useState([]);
   const [checkoutItemId, setCheckoutItemId] = useState(null);
   const [notifier, setNotifier] = useState({is_active: false, text: null});
-  //const [alertState, setAlertState] = useState({text: null, is_error: true});
-  const [alertState, setAlertState] = useState({text: 'This is an error!', is_error: true});
+  const [alertState, setAlertState] = useState({text: null, is_error: true});
+  //const [alertState, setAlertState] = useState({text: 'This is an error!', is_error: true});
 
   const [checkoutOpened, setCheckoutOpened] = useState(false);
+
+  // Waiting to retrieve coupons, waiting to get a response from the server etc.
+  // To prevent the user from calling twice
+  const [isWaiting, setIsWaiting] = useState(false);
 
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
@@ -45,7 +49,7 @@ export default function ShopArea() {
     const metaplex = new Metaplex(connection);
     metaplex.use(keypairIdentity(keypair));
 
-    const owner = new PublicKey(publicKey)
+    const owner = publicKey
 
     const allNFTs = await metaplex.nfts().findAllByOwner({ owner });
 
@@ -95,14 +99,15 @@ export default function ShopArea() {
       return null
     }
 
-    // TODO: If a transaction is being requested
+    // TODO: If a transaction is being requested, disallow
+    // if(isWaiting) { interrupt }
 
     setNotifier({is_active: true, text: 'Checking for coupons...'})
 
     getCouponList(publicKey).then(result => {
       setCheckoutCouponList(result)
 
-      setNotifier({is_active: false, text: ''})
+      setNotifier({is_active: false, text: null})
 
       setCheckoutItemId(itemId)
       setCheckoutOpened(true)
@@ -119,24 +124,112 @@ export default function ShopArea() {
   // User confirmed the checkout
   const onCheckoutConfirm = (selectedOption) => {
     console.log("Checkout confirmed with option:", selectedOption)
+
+    let couponVar;
+
+    if (selectedOption == "-1") {
+      couponVar = "null"
+    } else {
+      couponVar = checkoutCouponList[Number(selectedOption)]['mintAddress']
+    }
+
+    const accountVar = publicKey.toBase58()
+    const productVar = checkoutItemId
+
+    //console.log(accountVar, productVar, couponVar)
+
     setCheckoutItemId(null)
     setCheckoutOpened(false)
 
-    console.log("set alert state")
-    setAlertState({text: "confirm", is_error: false})
+    setNotifier({is_active: true, text: 'Request transaction from server...'})
+    
+    // TODO: Change state to "waiting for tx"
+    // setIsWaiting(true)
+
+    // TODO: timeout
+    requestTransactionFromServer(accountVar, productVar, couponVar).then((res) => {
+      console.log("request tx done")
+      console.log("response: ", res)
+      setNotifier({is_active: false, text: null})
+
+      if (!('status' in res) || !('tx' in res)) {
+        console.log("Invalid response from server")
+        // setIsWaiting(false)
+        // setNotification(failed)
+        return
+      }
+
+      if (res.status == 'success') {
+
+        if (res.tx.length == 0) {
+          console.log("No transactions")
+          return
+        }
+
+        // Send transactions to the wallet
+
+        setNotifier({is_active: true, text: 'Sending transaction(s) to wallet...'})
+
+        // Single TX for testing
+        
+        const tx_label = res.tx[0]['label']
+        const tx_data = res.tx[0]['data']
+
+        const tx_recovered = Transaction.from(
+          Buffer.from(tx_data, "base64")
+        )
+
+        console.log(`Send tx '${tx_label}' to wallet`)
+
+        sendTransaction(tx_recovered, connection).then((sig) =>{
+          console.log("tx signature:", sig) 
+
+          console.log("tx signature:", sig) 
+
+          // Confirmation
+          // const latestBlockhash = await connection.getLatestBlockhash()
+          // await connection.confirmTransaction({ blockhash, lastValidBlockHeight, sig });
+
+          // TODO: show pos notification
+          setNotifier({is_active: false, text: null})
+        })
+
+        //prom = res.tx.map(function(tx_base64) {
+
+        //  const tx_recovered = Transaction.from(
+        //    Buffer.from(tx_base64, "base64")
+        //  )
+
+        //  console.log("Send tx to wallet")
+
+        //  return sendTransaction(tx_recovered, connection)
+        //})
+
+        setNotifier({is_active: true, text: 'Waiting for approval...'})
+
+        // TODO
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+      }
+      
+      if (res.status != 'success') {
+        console.log("request tx failed!")
+        // TODO: reset 
+        // setIsWaiting(false)
+        // setNotifire(failed)
+      }
+    })
   }
 
-  const requestTransaction = async () => {
-    console.log("Perform Transaction")
-
-    // TODO: Change state to "waiting for tx"
-    // let mintAddress = couponList[i]['mintAddress']; 
+  const requestTransactionFromServer = async (accountVar, productVar, couponVar) => {
+    console.log("Request Transaction")
 
     const req_body = {
-      account: 'HDqxxSCNY5goEtFxMJqN7wkXKNMDfxAFiSXhQ1wcg2pV',
-      product: "skateboard_01",
-      coupon: "null"
+      account: accountVar,
+      product: productVar,
+      coupon: couponVar
     }
+
+    console.log("request body:", req_body)
 
     const res = await fetch('/api/request_transaction', {
       method: 'POST',
@@ -148,8 +241,11 @@ export default function ShopArea() {
     })
 
     const data = await res.json()
-
-    console.log(data)
+    
+    return data
+    
+    // TODO: check status
+    /*
 
     const tx_base64 = data.transaction
 
@@ -174,6 +270,7 @@ export default function ShopArea() {
 
       sendTransaction(recoveredCouponTransaction, connection)
     }
+    */
 
   }
 
