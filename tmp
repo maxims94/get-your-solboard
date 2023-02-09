@@ -1,0 +1,104 @@
+
+    // TODO: timeout
+    requestTransactionFromServer(accountVar, productVar, couponVar).then((res) => {
+      setNotifier({is_active: false, text: null})
+
+      if (!('status' in res) || !('tx' in res)) {
+        console.log("Invalid response from server")
+        // setIsWaiting(false)
+        // setNotification(failed)
+        return
+      }
+
+      if (res.status == 'success') {
+
+        if (res.tx.length == 0) {
+          console.log("No transactions")
+          return
+        }
+
+        // Send transactions to the wallet
+
+        setNotifier({is_active: true, text: 'Sending transaction(s) to wallet...'})
+
+        // Single TX for testing
+        
+        const tx_label = res.tx[0]['label']
+        const tx_data = res.tx[0]['data']
+
+        const tx_recovered = Transaction.from(
+          Buffer.from(tx_data, "base64")
+        )
+
+        console.log(`Send tx '${tx_label}' to wallet`)
+
+        sendTransaction(tx_recovered, connection).then((sig) =>{
+          console.log("tx signature:", sig) 
+
+          console.log("tx signature:", sig) 
+
+          // Confirmation
+          // const latestBlockhash = await connection.getLatestBlockhash()
+          // await connection.confirmTransaction({ blockhash, lastValidBlockHeight, sig });
+
+          // TODO: show pos notification
+          setNotifier({is_active: false, text: null})
+        })
+
+        //prom = res.tx.map(function(tx_base64) {
+
+        //  const tx_recovered = Transaction.from(
+        //    Buffer.from(tx_base64, "base64")
+        //  )
+
+        //  console.log("Send tx to wallet")
+
+        //  return sendTransaction(tx_recovered, connection)
+        //})
+
+        setNotifier({is_active: true, text: 'Waiting for approval...'})
+
+        // TODO
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+      }
+      
+      if (res.status != 'success') {
+        console.log("request tx failed!")
+        // TODO: reset 
+        // setIsWaiting(false)
+        // setNotifire(failed)
+      }
+    })
+  }
+
+  const requestTransactionFromServer = async (accountVar, productVar, couponVar) => {
+
+    // TODO: check status
+    /*
+
+    const tx_base64 = data.transaction
+
+    const recoveredTransaction = Transaction.from(
+      Buffer.from(tx_base64, "base64")
+    )
+
+    console.log("Send to wallet")
+
+    sendTransaction(recoveredTransaction, connection)
+
+    if ('coupon_transaction' in data) {
+      console.log("Coupon tx found")
+
+      const coupon_tx_base64 = data.coupon_transaction
+
+      const recoveredCouponTransaction = Transaction.from(
+        Buffer.from(coupon_tx_base64, "base64")
+      )
+
+      console.log("Send coupon tx to wallet")
+
+      sendTransaction(recoveredCouponTransaction, connection)
+    }
+    */
+
+  }

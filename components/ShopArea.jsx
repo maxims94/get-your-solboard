@@ -125,6 +125,33 @@ export default function ShopArea() {
   const onCheckoutConfirm = (selectedOption) => {
     console.log("Checkout confirmed with option:", selectedOption)
 
+    const selectedItemId = checkoutItemId
+
+    setCheckoutItemId(null)
+    setCheckoutOpened(false)
+    
+    // TODO: Change state to "waiting for tx"
+    // setIsWaiting(true)
+
+    performCheckout(selectedItemId, selectedOption).then(
+      () => {
+        console.log("Checkout successful!")
+      },
+      error => {
+        console.log("Checkout failed:", String(error))
+      }
+    ).finally(() => {
+      //setIsWaiting(false)
+    })
+  }
+
+  const performCheckout = async (selectedItemId, selectedOption) => {
+    
+    console.log("Request transaction from server")
+    setNotifier({is_active: true, text: 'Request transaction from server...'})
+
+    // Build request
+
     let couponVar;
 
     if (selectedOption == "-1") {
@@ -134,143 +161,109 @@ export default function ShopArea() {
     }
 
     const accountVar = publicKey.toBase58()
-    const productVar = checkoutItemId
+    const productVar = selectedItemId
 
-    //console.log(accountVar, productVar, couponVar)
-
-    setCheckoutItemId(null)
-    setCheckoutOpened(false)
-
-    setNotifier({is_active: true, text: 'Request transaction from server...'})
-    
-    // TODO: Change state to "waiting for tx"
-    // setIsWaiting(true)
-
-    // TODO: timeout
-    requestTransactionFromServer(accountVar, productVar, couponVar).then((res) => {
-      console.log("request tx done")
-      console.log("response: ", res)
-      setNotifier({is_active: false, text: null})
-
-      if (!('status' in res) || !('tx' in res)) {
-        console.log("Invalid response from server")
-        // setIsWaiting(false)
-        // setNotification(failed)
-        return
-      }
-
-      if (res.status == 'success') {
-
-        if (res.tx.length == 0) {
-          console.log("No transactions")
-          return
-        }
-
-        // Send transactions to the wallet
-
-        setNotifier({is_active: true, text: 'Sending transaction(s) to wallet...'})
-
-        // Single TX for testing
-        
-        const tx_label = res.tx[0]['label']
-        const tx_data = res.tx[0]['data']
-
-        const tx_recovered = Transaction.from(
-          Buffer.from(tx_data, "base64")
-        )
-
-        console.log(`Send tx '${tx_label}' to wallet`)
-
-        sendTransaction(tx_recovered, connection).then((sig) =>{
-          console.log("tx signature:", sig) 
-
-          console.log("tx signature:", sig) 
-
-          // Confirmation
-          // const latestBlockhash = await connection.getLatestBlockhash()
-          // await connection.confirmTransaction({ blockhash, lastValidBlockHeight, sig });
-
-          // TODO: show pos notification
-          setNotifier({is_active: false, text: null})
-        })
-
-        //prom = res.tx.map(function(tx_base64) {
-
-        //  const tx_recovered = Transaction.from(
-        //    Buffer.from(tx_base64, "base64")
-        //  )
-
-        //  console.log("Send tx to wallet")
-
-        //  return sendTransaction(tx_recovered, connection)
-        //})
-
-        setNotifier({is_active: true, text: 'Waiting for approval...'})
-
-        // TODO
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
-      }
-      
-      if (res.status != 'success') {
-        console.log("request tx failed!")
-        // TODO: reset 
-        // setIsWaiting(false)
-        // setNotifire(failed)
-      }
-    })
-  }
-
-  const requestTransactionFromServer = async (accountVar, productVar, couponVar) => {
-    console.log("Request Transaction")
-
-    const req_body = {
+    const requestBody = {
       account: accountVar,
       product: productVar,
       coupon: couponVar
     }
 
-    console.log("request body:", req_body)
+    console.log("request body:", requestBody)
 
-    const res = await fetch('/api/request_transaction', {
+    // Send request
+
+    const responseRaw = await fetch('/api/request_transaction', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(req_body)
+      body: JSON.stringify(requestBody)
     })
-
-    const data = await res.json()
     
-    return data
+    const response = await responseRaw.json()
     
-    // TODO: check status
-    /*
+    // Handle response
+    
+    console.log("response:", response)
 
-    const tx_base64 = data.transaction
+    setNotifier({is_active: false, text: null})
 
-    const recoveredTransaction = Transaction.from(
-      Buffer.from(tx_base64, "base64")
+    if (!('status' in response) || response.status != 'success') {
+      // TODO Failure notification
+      throw Error("Request failed")
+    }
+
+    if (!('tx' in response)) {
+      throw Error("Invalid server response")
+    }
+
+    if (response.tx.length == 0) {
+      console.log("No transactions")
+      return
+    }
+
+    // Get transaction
+    // The server will always send exactly one transaction
+    
+    const tx_label = response.tx[0]['label']
+    const tx_data = response.tx[0]['data']
+
+    const tx_recovered = Transaction.from(
+      Buffer.from(tx_data, "base64")
     )
 
-    console.log("Send to wallet")
+    console.log(`Send tx '${tx_label}' to wallet`)
 
-    sendTransaction(recoveredTransaction, connection)
+    let sig;
 
-    if ('coupon_transaction' in data) {
-      console.log("Coupon tx found")
+    try {
 
-      const coupon_tx_base64 = data.coupon_transaction
+      sig = await sendTransaction(tx_recovered, connection)
 
-      const recoveredCouponTransaction = Transaction.from(
-        Buffer.from(coupon_tx_base64, "base64")
-      )
+    } catch (error) {
 
-      console.log("Send coupon tx to wallet")
+      const msg = "Error while sending transaction to wallet: " + String(error)
 
-      sendTransaction(recoveredCouponTransaction, connection)
+      console.log(msg)
+
+      // TODO: failure notification
+      throw Error(error)
     }
-    */
+
+    // Transaction successful
+    
+    console.log("Transaction signature:", sig) 
+
+    // TODO: show pos notification
+    setNotifier({is_active: false, text: null})
+
+    // Confirm transaction
+    
+    console.log(`Confirm tx '${tx_label}`)
+    // TODO: loading
+    setNotifier({is_active: true, text: "Confirming transactions..."})
+    
+    try {
+
+      const { blockhash, lastValidBlockHeight} = await connection.getLatestBlockhash()
+
+      const result = await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: sig });
+
+      console.log("Confirmation result: ", {result})
+
+      setNotifier({is_active: false, text: null})
+
+    } catch (error) {
+
+      const msg = "Error while confirming transactions: " + String(error)
+
+      console.log(msg)
+
+      // TODO: failure notification
+      throw Error(error)
+    }
 
   }
 
