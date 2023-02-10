@@ -256,29 +256,29 @@ export default function ShopArea() {
       console.log("Current transaction:", item.label)
 
       let rawTransaction = item.transaction.serialize()
-      let sig = await connection.sendRawTransaction(rawTransaction)
+      let signature = await connection.sendRawTransaction(rawTransaction)
 
-      console.log(sig)
+      console.log(signature)
+
+      item['signature'] = signature
     }
 
-    /*
-    // Confirm transaction
+    // Confirm transactions
     
-    console.log(`Confirm tx '${tx_label}`)
-    
-    try {
+    console.log("Confirm transactions")
+
+    for(let item of labeledTransactions) {
+
+      console.log("Current transaction:", item.label)
 
       const { blockhash, lastValidBlockHeight} = await connection.getLatestBlockhash()
 
-      const result = await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: sig });
+      const result = await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: item.signature }, "confirmed");
 
       console.log("Confirmation result: ", {result})
 
-      setNotifier({is_active: false, text: null})
-
     }
-    */
-
+    
   }
 
   const generateShopItem = (number) => {
