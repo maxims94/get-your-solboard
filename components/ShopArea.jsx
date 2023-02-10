@@ -36,7 +36,7 @@ export default function ShopArea() {
   const [isWaiting, setIsWaiting] = useState(false);
 
   const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, signAllTransactions } = useWallet();
 
   const getCouponList = async (publicKey) => {
     console.log("get coupon list");
@@ -205,8 +205,33 @@ export default function ShopArea() {
     }
 
     // Get transaction
-    // The server will always send exactly one transaction
     
+    const transactionLabels = response.tx.map(item => item['label'])
+    console.log("Tx labels:", transactionLabels)
+
+    const transactions = response.tx.map(item => {
+      return Transaction.from(
+        Buffer.from(item['data'], "base64")
+      )
+    })
+
+    let sig;
+
+    try {
+
+      sig = await signAllTransactions(transactions, connection)
+
+    } catch (error) {
+
+      const msg = "Error while signing transactions: " + String(error)
+
+      console.log(msg)
+
+      throw Error(error)
+    }
+    // Single TX
+    
+    /*
     const tx_label = response.tx[0]['label']
     const tx_data = response.tx[0]['data']
 
@@ -231,6 +256,7 @@ export default function ShopArea() {
       // TODO: failure notification
       throw Error(error)
     }
+    */
 
     // Transaction successful
     

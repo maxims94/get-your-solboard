@@ -88,13 +88,127 @@ async function postExecSimple(account: PublicKey, product: string, coupon: Publi
 // Full
 //
 
-async function sellNftTransaction(transactionBuilder: TransactionBuilder, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number) {
+async function postExec(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
+
+  // Init
+
+  const shopPrivateKey = process.env.SHOP_PRIVATE_KEY
+  if (!shopPrivateKey) throw new Error("SHOP_PRIVATE_KEY not found")
+
+  const clusterUrl = process.env.CLUSTER_URL
+  if (!clusterUrl) throw new Error("CLUSTER_URL not found")
+
+  const shopKeypair = Keypair.fromSecretKey(base58.decode(shopPrivateKey))
+  const buyerPublicKey = account
+
+  const connection = new Connection(clusterUrl)
+
+  console.log("Shop pubkey:", shopKeypair.publicKey.toString())
+  console.log("Buyer pubkey:", buyerPublicKey.toString())
+
+  // Init Metaplex
+
+  const metaplex = Metaplex
+    .make(connection)
+    .use(keypairIdentity(shopKeypair))
+
+  const nfts = metaplex.nfts()
+
+  const client = metaplex.nfts().builders()
+
+  // Case analysis
+  
+  if (!(product in NFT_PRICES)) {
+    throw new Error("Invalid product")
+  }
+  const productPrice = NFT_PRICES[product]
+
+  let nftPrice;
+  let couponAmount;
+  let couponName;
+  let couponUrl;
+
+  let transactions;
+
+  if (coupon === undefined) {
+
+    couponAmount = 0
+
+    if (productPrice >= 0.5) {
+        couponAmount = 0.05
+        couponName = "SolBoards Coupon (0.05 SOL)"
+        couponUrl = NFT_URLS["coupon_01_metadata"]
+    }
+
+    if (productPrice >= 0.6) {
+        couponAmount = 0.1
+        couponName = "SolBoards Coupon (0.1 SOL)"
+        couponUrl = NFT_URLS["coupon_02_metadata"]
+    }
+
+    if (productPrice > 0.7) {
+        couponAmount = 0.15
+        couponName = "SolBoards Coupon (0.15 SOL)"
+        couponUrl = NFT_URLS["coupon_03_metadata"]
+    }
+
+    nftPrice = productPrice
+
+    if (couponAmount != 0) {
+        console.log(`Case: Sell NFT (price: ${nftPrice}) and create coupon (amount: ${couponAmount})`)
+        transactions = await sellNftAndCreateCouponTransaction(connection, client, shopKeypair, buyerPublicKey, nftPrice, product, couponUrl, couponName)
+    } else {
+        console.log(`Case: Sell NFT (price: ${nftPrice})`)
+        transactions = await sellNftTransaction(connection, client, shopKeypair, buyerPublicKey, nftPrice, product)
+    }
+
+  } else {
+
+    // Check validity of coupon
+
+    // Get NFT info: name must be SolBoards, updateauthority must be shop, owner must be the user
+    //
+
+    //discoutn = f(name)
+    couponAmount = 0
+    nftPrice = productPrice - couponAmount
+
+    console.log(`Case: Sell NFT and redeem coupon (final price: ${nftPrice})`)
+
+    transactions = await sellNftAndRedeemCouponTransaction()
+  }
+
+  console.log(`Return ${transactions.length} transaction(s)`)
+
+  const output:PostResponse = {
+    status: 'success',
+    tx: transactions
+  }
+
+  return output
+
+  for(let transaction of transactions) {
+
+    console.log(`Serialize transaction (${transaction.instructions.length} instruction(s))`)
+
+    let serializedTransaction = transaction.serialize({ requireAllSignatures: false })
+    
+    output.tx.push({
+      label: tx_label,
+      data: serializedTransaction.toString('base64')
+    })
+  }
+}
+
+async function sellNftTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string){
 
   console.log("Create transaction: Sell NFT")
+
+  const transactionBuilder = new TransactionBuilder()
   
   // Transfer SOL
 
-  console.log("Transfer SOL")
+  console.log("Add: Transfer SOL")
 
   const sendSolInstruction = SystemProgram.transfer({
       fromPubkey: buyerPublicKey,
@@ -107,11 +221,9 @@ async function sellNftTransaction(transactionBuilder: TransactionBuilder, shopKe
     signers: [new GuestIdentityDriver(buyerPublicKey)]
   })
 
-  /*
-  
   // Mint NFT
 
-  console.log("Mint main NFT")
+  console.log("Add: Mint NFT")
 
   const nftMintKeypair = Keypair.generate()
 
@@ -127,43 +239,110 @@ async function sellNftTransaction(transactionBuilder: TransactionBuilder, shopKe
     mintAuthority: shopKeypair
   })
 
-  console.log("Keys:", nftTransactionBuilder.getInstructionsWithSigners().map(record => record.key))
-
   transactionBuilder.append(nftTransactionBuilder)
-
-  console.log("Instruction count: ", transactionBuilder.getInstructionCount())
 
   // Convert to Transaction
 
-  // Convert TransactionBuilder to Transaction object
   const latestBlockhash = await connection.getLatestBlockhash()
   const transaction = await transactionBuilder.toTransaction(latestBlockhash)
 
-  // Shop pays fees
   transaction.feePayer = shopKeypair.publicKey
 
-  // Sign
   transaction.sign(shopKeypair, nftMintKeypair)
-  */
+  
+  return [formatTransaction(transaction)]
 }
 
-async function sellNftAndCreateCouponTransaction() {
-
-  return new Transaction()
-  /*
+async function sellNftAndCreateCouponTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string, couponUrl: string, couponName: string): Promise<Transaction[]> {
 
 
-        mintCouponKeypair = Keypair.generate()
+  console.log("Create transaction: Sell NFT and create coupon")
 
-        couponTransactionBuilder = await nfts.builders().create({
-            uri: couponUri,
-            name: couponName,
-            tokenOwner: account,
-            updateAuthority: shopKeypair,
-            sellerFeeBasisPoints: 0,
-            useNewMint: mintCouponKeypair,
-        })
-  */
+  // Split into two TX due to TX size limit
+  
+  const result: Transaction[] = []
+
+  const latestBlockhash = await connection.getLatestBlockhash()
+
+  // First tx
+  
+  const transactionBuilder = new TransactionBuilder()
+
+  // Transfer SOL
+
+  console.log("Add: Transfer SOL")
+
+  const sendSolInstruction = SystemProgram.transfer({
+      fromPubkey: buyerPublicKey,
+      toPubkey: shopKeypair.publicKey,
+      lamports: LAMPORTS_PER_SOL * nftPrice
+  })
+  
+  transactionBuilder.append({
+    instruction: sendSolInstruction,
+    signers: [new GuestIdentityDriver(buyerPublicKey)]
+  })
+
+  // Mint NFT
+
+  console.log("Add: Mint NFT")
+
+  const nftMintKeypair = Keypair.generate()
+
+  console.log("Mint address:", nftMintKeypair.publicKey.toString())
+
+  const nftTransactionBuilder = await client.create({
+    uri: NFT_URLS[product + "_metadata"],
+    name: NFT_NAMES[product],
+    sellerFeeBasisPoints: 100,
+    useNewMint: nftMintKeypair,
+    isMutable: false,
+    tokenOwner: buyerPublicKey,
+    mintAuthority: shopKeypair
+  })
+
+  transactionBuilder.append(nftTransactionBuilder)
+  
+  // Convert to Transaction
+
+  const transaction = await transactionBuilder.toTransaction(latestBlockhash)
+
+  transaction.feePayer = shopKeypair.publicKey
+
+  transaction.sign(shopKeypair, nftMintKeypair)
+
+  result.push(transaction)
+  
+  // Mint coupon NFT
+
+  console.log("Add: Mint coupon NFT")
+
+  const couponNftMintKeypair = Keypair.generate()
+
+  console.log("Coupon mint address:", couponNftMintKeypair.publicKey.toString())
+
+  const couponNftTransactionBuilder = await client.create({
+    uri: couponUrl,
+    name: couponName,
+    sellerFeeBasisPoints: 0,
+    useNewMint: couponNftMintKeypair,
+    isMutable: false,
+    tokenOwner: buyerPublicKey,
+    mintAuthority: shopKeypair
+  })
+
+  // Convert to Transaction
+
+  const couponTransaction = await couponNftTransactionBuilder.toTransaction(latestBlockhash)
+
+  couponTransaction.feePayer = shopKeypair.publicKey
+
+  couponTransaction.sign(shopKeypair, couponNftMintKeypair)
+
+  result.push(couponTransaction)
+
+  return result
+
 }
 
 async function sellNftAndRedeemCouponTransaction() {
@@ -248,116 +427,6 @@ async function sellNftAndRedeemCouponTransaction() {
 
   transaction.feePayer = ownerKeypair.publicKey
   */
-}
-
-async function postExec(account: PublicKey, product: string, coupon: any): Promise<PostResponse> {
-
-  // Init
-
-  const shopPrivateKey = process.env.SHOP_PRIVATE_KEY
-  if (!shopPrivateKey) throw new Error("SHOP_PRIVATE_KEY not found")
-
-  const clusterUrl = process.env.CLUSTER_URL
-  if (!clusterUrl) throw new Error("CLUSTER_URL not found")
-
-  const shopKeypair = Keypair.fromSecretKey(base58.decode(shopPrivateKey))
-  const buyerPublicKey = account
-
-  const connection = new Connection(clusterUrl)
-
-  console.log("Shop pubkey:", shopKeypair.publicKey.toString())
-  console.log("Buyer pubkey:", buyerPublicKey.toString())
-
-  // Init Metaplex
-
-  const metaplex = Metaplex
-    .make(connection)
-    .use(keypairIdentity(shopKeypair))
-
-  const nfts = metaplex.nfts()
-
-  const client = metaplex.nfts().builders()
-
-  const transactionBuilder = new TransactionBuilder()
-
-  // Case analysis
-  
-  if (!(product in NFT_PRICES)) {
-    throw new Error("Invalid product")
-  }
-  const productPrice = NFT_PRICES[product]
-
-  let nftPrice;
-  let couponAmount;
-  let couponName;
-  let couponUrl;
-
-  let transaction;
-  let tx_label;
-
-  if (coupon === undefined) {
-
-    couponAmount = 0
-
-    if (productPrice >= 0.5) {
-        couponAmount = 0.05
-        couponName = "SolBoards Coupon (0.05 SOL)"
-        couponUrl = NFT_URLS["coupon_01_metadata"]
-    }
-
-    if (productPrice >= 0.6) {
-        couponAmount = 0.1
-        couponName = "SolBoards Coupon (0.1 SOL)"
-        couponUrl = NFT_URLS["coupon_02_metadata"]
-    }
-
-    if (productPrice > 0.7) {
-        couponAmount = 0.15
-        couponName = "SolBoards Coupon (0.15 SOL)"
-        couponUrl = NFT_URLS["coupon_03_metadata"]
-    }
-
-    nftPrice = productPrice
-
-    if (couponAmount != 0) {
-        console.log(`Case: Sell NFT (price: ${nftPrice}) and create coupon (amount: ${couponAmount})`)
-        transaction = await sellNftAndCreateCouponTransaction()
-        tx_label = 'sell_nft_and_create_coupon'
-    } else {
-        console.log(`Case: Sell NFT (price: ${nftPrice})`)
-        transaction = await sellNftTransaction()
-        tx_label = 'sell_nft'
-    }
-
-  } else {
-
-    // Check validity of coupon
-
-    // Get NFT info: name must be SolBoards, updateauthority must be shop, owner must be the user
-    //
-
-    //discoutn = f(name)
-    couponAmount = 0
-    nftPrice = productPrice - couponAmount
-
-    console.log(`Case: Sell NFT and redeem coupon (final price: ${nftPrice})`)
-
-    transaction = await sellNftAndRedeemCouponTransaction()
-    tx_label = 'sell_nft_and_redeem_coupon'
-    
-  }
-
-  const serializedTransaction = transaction.serialize({ requireAllSignatures: false })
-
-  const output:PostResponse = {
-    status: 'success',
-    tx: [{
-      label: tx_label,
-      data: serializedTransaction.toString('base64')
-    }],
-  }
-
-  return output
 }
 
 async function post(
