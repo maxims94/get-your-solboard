@@ -1,14 +1,8 @@
 import styles from '../styles/Home.module.css'
 
 import ShopItem from '../components/ShopItem'
-import LoadingNotification from '../components/LoadingNotification'
-import AlertNotification from '../components/AlertNotification'
 import Checkout from '../components/Checkout'
-
-const NFT_PRICES = require('nft_data/nft_prices.json')
-
-import { Alert } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons';
+import OverlayNotification from '../components/OverlayNotification'
 
 import { useState } from 'react';
 
@@ -20,26 +14,26 @@ import { Connection, clusterApiUrl, Keypair, PublicKey, sendAndConfirmTransactio
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
 const SHOP_PUBLIC_KEY = 'MD5FAwmMTQ5h5X4wcgkGFagCHrZ7JpVdDehE94db5rw'
+const NFT_PRICES = require('nft_data/nft_prices.json')
 
 export default function ShopArea() {
 
   const [checkoutCouponList, setCheckoutCouponList] = useState([]);
   const [checkoutItemId, setCheckoutItemId] = useState(null);
-  const [notifier, setNotifier] = useState({is_active: false, text: null});
-  const [alertState, setAlertState] = useState({text: null, is_error: true});
-  //const [alertState, setAlertState] = useState({text: 'This is an error!', is_error: true});
+
+  const [notification, setNotification] = useState({active: false, type: null, text: null});
+
+  const setN = (active, type = null, text = null) => {
+    setNotification({active, type, text, ts: Date.now()})
+  }
 
   const [checkoutOpened, setCheckoutOpened] = useState(false);
-
-  // Waiting to retrieve coupons, waiting to get a response from the server etc.
-  // To prevent the user from calling twice
-  const [isWaiting, setIsWaiting] = useState(false);
 
   const { connection } = useConnection();
   const { publicKey, sendTransaction, signAllTransactions } = useWallet();
 
   const getCouponList = async (publicKey) => {
-    console.log("get coupon list");
+    console.log("Get coupon list");
 
     const apiUrl = clusterApiUrl('devnet');
     const connection = new Connection(apiUrl);
@@ -91,23 +85,44 @@ export default function ShopArea() {
     return result
   }
 
+  const onShopItemClickTestN = () => {
+
+    async function sleep(t) {
+      return new Promise(resolve => setTimeout(resolve,t*1000))
+    }
+    
+    (async () => {
+      setN(true, "loading", "Checking for coupons...")
+
+      await sleep(2)
+
+      setN(true, "success", "Success!")
+
+      await sleep(2)
+
+      setN(true, "failure", "Failure!")
+
+    })()
+
+  }
+
   const onShopItemClick = (itemId) => {
 
     if (!connection || !publicKey) {
       console.log("Not connected!")
-      alert("Connect a wallet and let's go!")
+      setN(true, "failure", "Please connect a wallet!")
       return null
     }
 
     // TODO: If a transaction is being requested, disallow
-    // if(isWaiting) { interrupt }
+    // if(isCheckoutActive) { interrupt }
 
-    setNotifier({is_active: true, text: 'Checking for coupons...'})
+    setN(true, "loading", "Checking for coupons...")
 
     getCouponList(publicKey).then(result => {
       setCheckoutCouponList(result)
 
-      setNotifier({is_active: false, text: null})
+      setN(false)
 
       setCheckoutItemId(itemId)
       setCheckoutOpened(true)
@@ -129,26 +144,24 @@ export default function ShopArea() {
 
     setCheckoutItemId(null)
     setCheckoutOpened(false)
-    
-    // TODO: Change state to "waiting for tx"
-    // setIsWaiting(true)
 
     performCheckout(selectedItemId, selectedOption).then(
       () => {
         console.log("Checkout successful!")
+        //setN(true, "success", (<a href=''>test</a>))
+        setN(true, "success", "Checkout successful! <a href=''>test</a>")
       },
       error => {
         console.log("Checkout failed:", String(error))
+        setN(true, "failure", "Error during checkout")
       }
-    ).finally(() => {
-      //setIsWaiting(false)
-    })
+    )
   }
 
   const performCheckout = async (selectedItemId, selectedOption) => {
     
     console.log("Request transaction from server")
-    setNotifier({is_active: true, text: 'Request transaction from server...'})
+    setN(true, "loading", "Request transaction from server...")
 
     // Build request
 
@@ -184,14 +197,13 @@ export default function ShopArea() {
     
     const response = await responseRaw.json()
 
-    setNotifier({is_active: false, text: null})
+    setN(false)
     
     // Handle response
     
     console.log("response:", response)
 
     if (!('status' in response) || response.status != 'success') {
-      // TODO Failure notification
       throw Error("Request failed")
     }
 
@@ -200,8 +212,7 @@ export default function ShopArea() {
     }
 
     if (response.tx.length == 0) {
-      console.log("No transactions")
-      return
+      throw Error("No transactions")
     }
 
     // Recover transactions
@@ -238,6 +249,8 @@ export default function ShopArea() {
 
     console.log("To sign:", transactionsToSign, transactionsToSignIndices)
 
+    setN(true, "loading", "Waiting for your signature...")
+
     const signedTx = await signAllTransactions(transactionsToSign, connection)
 
     console.log("Signed:", signedTx)
@@ -251,6 +264,8 @@ export default function ShopArea() {
     // Send transactions
 
     console.log("Send transactions")
+
+    setN(true, "loading", "Sending transactions...")
 
     for(let item of labeledTransactions) {
       console.log("Current transaction:", item.label)
@@ -266,6 +281,8 @@ export default function ShopArea() {
     // Confirm transactions
     
     console.log("Confirm transactions")
+
+    setN(true, "loading", "Confirming transactions...")
 
     for(let item of labeledTransactions) {
 
@@ -289,6 +306,7 @@ export default function ShopArea() {
     const short_name = "skateboard_"+number_str_padded
 
     return (
+      //<ShopItem officialName={official_name} shortName={short_name} itemPrice={NFT_PRICES[short_name]} onClick={onShopItemClickTestN} />
       <ShopItem officialName={official_name} shortName={short_name} itemPrice={NFT_PRICES[short_name]} onClick={onShopItemClick} />
     )
   }
@@ -310,8 +328,8 @@ export default function ShopArea() {
         </div>
       </div>
 
-      <LoadingNotification state={notifier} />
-      <AlertNotification  state={alertState} />
+      <OverlayNotification state={notification} />
+
       <Checkout itemId={checkoutItemId} opened={checkoutOpened} couponList={checkoutCouponList} onConfirm={onCheckoutConfirm} onCancel={onCheckoutCancel}/>
     </>
   )
