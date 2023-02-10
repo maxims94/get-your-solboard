@@ -16,7 +16,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
 import { Transaction } from '@solana/web3.js';
 
-import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
+import { Connection, clusterApiUrl, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
 const SHOP_PUBLIC_KEY = 'MD5FAwmMTQ5h5X4wcgkGFagCHrZ7JpVdDehE94db5rw'
@@ -183,12 +183,12 @@ export default function ShopArea() {
     })
     
     const response = await responseRaw.json()
+
+    setNotifier({is_active: false, text: null})
     
     // Handle response
     
     console.log("response:", response)
-
-    setNotifier({is_active: false, text: null})
 
     if (!('status' in response) || response.status != 'success') {
       // TODO Failure notification
@@ -204,72 +204,67 @@ export default function ShopArea() {
       return
     }
 
-    // Get transaction
-    
-    const transactionLabels = response.tx.map(item => item['label'])
-    console.log("Tx labels:", transactionLabels)
+    // Recover transactions
 
-    const transactions = response.tx.map(item => {
-      return Transaction.from(
-        Buffer.from(item['data'], "base64")
-      )
+    const labeledTransactions = response.tx.map(item => {
+      return {
+        label: item['label'],
+        transaction: Transaction.from(
+          Buffer.from(item['data'], "base64")
+        )
+      }
     })
 
-    let sig;
+    console.log("Labeled transactions:", labeledTransactions)
 
-    try {
+    // Sign transactions
 
-      sig = await signAllTransactions(transactions, connection)
+    console.log("Sign transactions")
 
-    } catch (error) {
+    // Get transactions that need to be signed
 
-      const msg = "Error while signing transactions: " + String(error)
+    const transactionsToSign = []
+    const transactionsToSignIndices = []
 
-      console.log(msg)
+    for(let i = 0; i < labeledTransactions.length; i++) {
 
-      throw Error(error)
+      let item = labeledTransactions[i]
+
+      if (item['label'] == 'mint_nft_for_sol' || item['label'] == 'redeem_coupon') {
+        transactionsToSign.push(item['transaction'])  
+        transactionsToSignIndices.push(i)  
+      }
     }
-    // Single TX
+
+    console.log("To sign:", transactionsToSign, transactionsToSignIndices)
+
+    const signedTx = await signAllTransactions(transactionsToSign, connection)
+
+    console.log("Signed:", signedTx)
+
+    for(let j of transactionsToSignIndices) {
+      labeledTransactions[j]['transaction'] = signedTx[j]
+    }
+
+    console.log("Labeled transactions (signed):", labeledTransactions)
     
+    // Send transactions
+
+    console.log("Send transactions")
+
+    for(let item of labeledTransactions) {
+      console.log("Current transaction:", item.label)
+
+      let rawTransaction = item.transaction.serialize()
+      let sig = await connection.sendRawTransaction(rawTransaction)
+
+      console.log(sig)
+    }
+
     /*
-    const tx_label = response.tx[0]['label']
-    const tx_data = response.tx[0]['data']
-
-    const tx_recovered = Transaction.from(
-      Buffer.from(tx_data, "base64")
-    )
-
-    console.log(`Send tx '${tx_label}' to wallet`)
-
-    let sig;
-
-    try {
-
-      sig = await sendTransaction(tx_recovered, connection)
-
-    } catch (error) {
-
-      const msg = "Error while sending transaction to wallet: " + String(error)
-
-      console.log(msg)
-
-      // TODO: failure notification
-      throw Error(error)
-    }
-    */
-
-    // Transaction successful
-    
-    console.log("Transaction signature:", sig) 
-
-    // TODO: show pos notification
-    setNotifier({is_active: false, text: null})
-
     // Confirm transaction
     
     console.log(`Confirm tx '${tx_label}`)
-    // TODO: loading
-    setNotifier({is_active: true, text: "Confirming transactions..."})
     
     try {
 
@@ -281,15 +276,8 @@ export default function ShopArea() {
 
       setNotifier({is_active: false, text: null})
 
-    } catch (error) {
-
-      const msg = "Error while confirming transactions: " + String(error)
-
-      console.log(msg)
-
-      // TODO: failure notification
-      throw Error(error)
     }
+    */
 
   }
 

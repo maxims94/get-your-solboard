@@ -186,17 +186,15 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
   }
 
   return output
+}
 
-  for(let transaction of transactions) {
+function formatTransaction(transaction: Transaction, label: string) {
 
-    console.log(`Serialize transaction (${transaction.instructions.length} instruction(s))`)
-
-    let serializedTransaction = transaction.serialize({ requireAllSignatures: false })
-    
-    output.tx.push({
-      label: tx_label,
-      data: serializedTransaction.toString('base64')
-    })
+  const serializedTransaction = transaction.serialize({ requireAllSignatures: false })
+  
+  return {
+    label: label,
+    data: serializedTransaction.toString('base64')
   }
 }
 
@@ -250,17 +248,19 @@ async function sellNftTransaction(connection: Connection, client: NftBuildersCli
 
   transaction.sign(shopKeypair, nftMintKeypair)
   
-  return [formatTransaction(transaction)]
+  return [formatTransaction(transaction, 'mint_nft_for_sol')]
 }
 
 async function sellNftAndCreateCouponTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string, couponUrl: string, couponName: string): Promise<Transaction[]> {
 
 
-  console.log("Create transaction: Sell NFT and create coupon")
+  console.log("Case: Sell NFT and create coupon")
+
+  console.log("Create transaction: Mint NFT for SOL")
 
   // Split into two TX due to TX size limit
   
-  const result: Transaction[] = []
+  const result = []
 
   const latestBlockhash = await connection.getLatestBlockhash()
 
@@ -311,11 +311,11 @@ async function sellNftAndCreateCouponTransaction(connection: Connection, client:
 
   transaction.sign(shopKeypair, nftMintKeypair)
 
-  result.push(transaction)
+  result.push(formatTransaction(transaction, 'mint_nft_for_sol'))
   
   // Mint coupon NFT
 
-  console.log("Add: Mint coupon NFT")
+  console.log("Create transaction: Mint coupon NFT")
 
   const couponNftMintKeypair = Keypair.generate()
 
@@ -339,7 +339,7 @@ async function sellNftAndCreateCouponTransaction(connection: Connection, client:
 
   couponTransaction.sign(shopKeypair, couponNftMintKeypair)
 
-  result.push(couponTransaction)
+  result.push(formatTransaction(couponTransaction, 'mint_coupon_nft'))
 
   return result
 
