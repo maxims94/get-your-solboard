@@ -1,7 +1,7 @@
 import styles from '../styles/Home.module.css'
 
 import { useState } from 'react';
-import { Modal, Button, Group, Text, Title, Radio } from '@mantine/core';
+import { Modal, Button, Group, Text, Title, Radio, Image } from '@mantine/core';
 
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
@@ -16,8 +16,10 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
   // -1 = no coupon
   const [coupon, setCoupon] = useState('-1');
 
-  const [couponMessage, setCouponMessage] = useState(undefined);
-  const [totalMessage, setTotalMessage] = useState(undefined);
+  const [couponMessage, setCouponMessage] = useState();
+  const [totalMessage, setTotalMessage] = useState();
+
+  const [prevItemId, setPrevItemId] = useState()
 
   if (itemId == null) {
     return null
@@ -26,6 +28,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
   // Display checkout
 
   const onCouponChange = (newCoupon) => {
+
     setCoupon(newCoupon)
 
     if (itemId == null) {
@@ -73,15 +76,23 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
       const explorer_link = `https://explorer.solana.com/address/${couponList[newCoupon]['mintAddress']}?cluster=devnet`
 
       setCouponMessage(
-        <p>With this purchase, you will redeem this coupon. The NFT will be burnt.</p>
+        <p>With this purchase, you will redeem this coupon. Its NFT will be burnt.</p>
         //<p>With this purchase, you will redeem <a href={explorer_link} target="_blank" className={styles.checkoutNormalLink}>this</a> coupon. The NFT will be burnt.</p>
       )
     }
   }
 
+  // This means that the state won't be reset if you select the same item
+  if (itemId != prevItemId) {
+    setPrevItemId(itemId)
+    onCouponChange('-1')
+  }
+
+  /*
   if (totalMessage === undefined) {
     onCouponChange(coupon)
   }
+  */
 
   return (
 
@@ -105,7 +116,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
             name="couponSelection"
             orientation="vertical"
           >
-            <Radio size="md" key="-1" value="-1" label="No coupon" />
+            <Radio size="md" key="-1" value="-1" label="No coupon"/>
             
             {
               couponList.map(function(item, i) {
@@ -145,10 +156,22 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
         </div>
 
         <Group position="right">
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="default" onClick={onCancel} sx={{ "&:active": {transform: "none"} }}>
             Cancel
           </Button>
-          <Button variant="filled" color="dark" onClick={() => onConfirm(coupon)}>Pay</Button>
+          <Button
+            variant="filled"
+           // color="dark"
+            onClick={() => onConfirm(coupon)}
+
+            sx={{ 
+              "&:active": {transform: "none"},
+              "background-color": "#1f1f1f",
+              "&:hover": {"background-color": "black"},
+            }}
+           >
+              <Image src="solana-pay-logo-white.svg" alt="Pay" height={20} />
+           </Button>
         </Group>
       </Modal>
   )

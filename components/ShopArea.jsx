@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
-import { Transaction } from '@solana/web3.js';
+import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 import { Connection, clusterApiUrl, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
@@ -110,30 +110,61 @@ export default function ShopArea() {
 
     if (!connection || !publicKey) {
       console.log("Not connected!")
-      setN(true, "failure", "Please connect a wallet!")
+      alert("Please connect a wallet!")
+      //setN(true, "failure", "Please connect a wallet!")
       return null
     }
 
-    // TODO: If a transaction is being requested, disallow
-    // if(isCheckoutActive) { interrupt }
+    prepareCheckout(itemId).then(
+      () => {
+        console.log("Prepare checkout successful")
+      },
+      error => {
+        console.log("Prepare checkout failed:", String(error))
+      }
+    )
+
+  }
+
+  const prepareCheckout = async (itemId) => {
+    setN(true, "loading", "Checking user balance...")
+
+    const userBalance = await connection.getBalance(publicKey)
+
+    console.log("User balance:", userBalance / LAMPORTS_PER_SOL)
+
+    if (userBalance < 1 * LAMPORTS_PER_SOL) {
+
+      console.log("Low user balance detected")
+
+      console.log("Top up user account with 1 SOL")
+
+      setN(true, "loading", "Top up wallet (1 SOL for free)...")
+
+      const signature = await connection.requestAirdrop(publicKey, 1 * LAMPORTS_PER_SOL);
+
+      await connection.confirmTransaction(signature, "confirmed");
+    }
 
     setN(true, "loading", "Checking for coupons...")
 
-    getCouponList(publicKey).then(result => {
-      setCheckoutCouponList(result)
+    const userCouponList = await getCouponList(publicKey)
 
-      setN(false)
+    setCheckoutCouponList(userCouponList)
 
-      setCheckoutItemId(itemId)
-      setCheckoutOpened(true)
-    })
+    setN(false)
+
+    setCheckoutItemId(itemId)
+    setCheckoutOpened(true)
   }
 
   // User closed the checkout window without sending a transaction
   const onCheckoutCancel = (event) => {
     console.log("Checkout cancelled")
+
     setCheckoutItemId(null)
     setCheckoutOpened(false)
+    setCheckoutCouponList([])
   }
   
   // User confirmed the checkout
@@ -144,6 +175,7 @@ export default function ShopArea() {
 
     setCheckoutItemId(null)
     setCheckoutOpened(false)
+    setCheckoutCouponList([])
 
     performCheckout(selectedItemId, selectedOption).then(
       () => {
