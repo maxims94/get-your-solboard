@@ -31,6 +31,12 @@ const NFT_URLS = require('nft_data/nft_urls.json')
 const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
 
+const COUPON_NAME_TO_AMOUNT = {
+  'SolBoards Coupon (0.05 SOL)': 0.05,
+  'SolBoards Coupon (0.1 SOL)': 0.1,
+  'SolBoards Coupon (0.15 SOL)': 0.15
+}
+
 //
 // Creates a simple test transaction for testing
 //
@@ -164,18 +170,70 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
 
   } else {
 
-    // Check validity of coupon
+    // Check validity of coupon NFT
 
-    // Get NFT info: name must be SolBoards, updateauthority must be shop, owner must be the user
-    //
+    console.log("Validate coupon address:", coupon.toString())
 
-    //discoutn = f(name)
-    couponAmount = 0
-    nftPrice = productPrice - couponAmount
+    console.log("Check NFTs found by user...")
+    
+    const ownedNfts = await metaplex.nfts().findAllByOwner({ owner: buyerPublicKey });
+
+    let couponNft;
+    let couponAmount;
+    let couponName;
+
+
+    for (let item of ownedNfts) {
+
+      // console.log("Item mint address:", item.mintAddress.toString())
+
+      if (!item.mintAddress.equals(coupon)) {
+        continue
+      }
+
+      console.log("Mint address found!")
+
+      if (!item.updateAuthorityAddress.equals(shopKeypair.publicKey)) {
+
+        console.log("Not our NFT")
+        throw new Error("Invalid Coupon NFT")
+
+      }
+
+      console.log("Our mint! ")
+
+      if (!(item.name in COUPON_NAME_TO_AMOUNT)) {
+
+        throw new Error("Invalid Coupon NFT")
+        console.log("Wrong kind of NFT")
+
+      }
+
+      console.log("Right kind!")
+      
+      couponNft = item.mintAddress
+      couponAmount = COUPON_NAME_TO_AMOUNT[item.name]
+      couponName = item.name
+
+      break;
+    }
+
+    if (couponNft === undefined) {
+      console.log("Couldn't find coupon NFT")
+      throw new Error("Invalid coupon")
+    }
+
+    console.log("VALID coupon found!")
+
+    console.log("Mint address:", couponNft.toString())
+    console.log("Name:", couponName)
+    console.log("Amount:", couponAmount)
+
+    nftPrice = Number((productPrice - couponAmount).toFixed(2))
 
     console.log(`Case: Sell NFT and redeem coupon (final price: ${nftPrice})`)
 
-    transactions = await sellNftAndRedeemCouponTransaction()
+    transactions = await sellNftAndRedeemCouponTransaction(connection, client, shopKeypair, buyerPublicKey, nftPrice, product, couponNft)
   }
 
   console.log(`Return ${transactions.length} transaction(s)`)
@@ -200,7 +258,9 @@ function formatTransaction(transaction: Transaction, label: string) {
 
 async function sellNftTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string){
 
-  console.log("Create transaction: Sell NFT")
+  console.log("Case: Sell NFT")
+
+  console.log("Create transaction: Mint NFT for SOL")
 
   const transactionBuilder = new TransactionBuilder()
   
@@ -230,6 +290,7 @@ async function sellNftTransaction(connection: Connection, client: NftBuildersCli
   const nftTransactionBuilder = await client.create({
     uri: NFT_URLS[product + "_metadata"],
     name: NFT_NAMES[product],
+    symbol: "SOLB",
     sellerFeeBasisPoints: 100,
     useNewMint: nftMintKeypair,
     isMutable: false,
@@ -251,7 +312,7 @@ async function sellNftTransaction(connection: Connection, client: NftBuildersCli
   return [formatTransaction(transaction, 'mint_nft_for_sol')]
 }
 
-async function sellNftAndCreateCouponTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string, couponUrl: string, couponName: string): Promise<Transaction[]> {
+async function sellNftAndCreateCouponTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string, couponUrl: string, couponName: string) {
 
 
   console.log("Case: Sell NFT and create coupon")
@@ -294,6 +355,7 @@ async function sellNftAndCreateCouponTransaction(connection: Connection, client:
   const nftTransactionBuilder = await client.create({
     uri: NFT_URLS[product + "_metadata"],
     name: NFT_NAMES[product],
+    symbol: "SOLB",
     sellerFeeBasisPoints: 100,
     useNewMint: nftMintKeypair,
     isMutable: false,
@@ -324,6 +386,7 @@ async function sellNftAndCreateCouponTransaction(connection: Connection, client:
   const couponNftTransactionBuilder = await client.create({
     uri: couponUrl,
     name: couponName,
+    symbol: "COUP",
     sellerFeeBasisPoints: 0,
     useNewMint: couponNftMintKeypair,
     isMutable: false,
@@ -345,87 +408,104 @@ async function sellNftAndCreateCouponTransaction(connection: Connection, client:
 
 }
 
-async function sellNftAndRedeemCouponTransaction() {
+async function sellNftAndRedeemCouponTransaction(connection: Connection, client: NftBuildersClient, shopKeypair: Keypair, buyerPublicKey: PublicKey, nftPrice: number, product: string, couponPublicKey: PublicKey) {
 
-  return new Transaction()
-  /*
-  //
-  // Redeem coupon TX
-  // [Transfer SOL, mint NFT, burn coupon]
-  //
+  console.log("Case: Sell NFT and redeem coupon")
 
-  console.log("Redeem coupon (transfer SOL, mint NFT and burn coupon)")
-  console.log("Build transaction")
+  console.log("Create transaction: Mint NFT for SOL")
+  
+  const result = []
 
-  const client = metaplex.nfts().builders() // NftBuildersClient
+  const latestBlockhash = await connection.getLatestBlockhash()
+
+  // Build TX
 
   const transactionBuilder = new TransactionBuilder()
   
   // Transfer SOL
 
-  console.log("Transfer SOL")
+  console.log("Add: Transfer SOL")
 
   const sendSolInstruction = SystemProgram.transfer({
-      fromPubkey: buyerKeypair.publicKey,
-      toPubkey: ownerKeypair.publicKey,
-      lamports: LAMPORTS_PER_SOL * 0.1
+      fromPubkey: buyerPublicKey,
+      toPubkey: shopKeypair.publicKey,
+      lamports: LAMPORTS_PER_SOL * nftPrice
   })
   
   transactionBuilder.append({
     instruction: sendSolInstruction,
-    signers: [buyerKeypair]
+    signers: [new GuestIdentityDriver(buyerPublicKey)]
   })
 
-  console.log("Instruction count: ", transactionBuilder.getInstructionCount())
-  
-  // Mint purchased NFT
+  // Mint NFT
 
-  console.log("Mint NFT")
+  console.log("Add: Mint NFT")
 
   const nftMintKeypair = Keypair.generate()
 
   console.log("Mint address:", nftMintKeypair.publicKey.toString())
 
   const nftTransactionBuilder = await client.create({
-    uri: "https://arweave.net/t1w7odrzZgTBXResWuDfsnHx6AGVo0EYTzRQyFgjXJc",
-    name: "nft",
+    uri: NFT_URLS[product + "_metadata"],
+    name: NFT_NAMES[product],
+    symbol: "SOLB",
     sellerFeeBasisPoints: 100,
     useNewMint: nftMintKeypair,
     isMutable: false,
-    tokenOwner: buyerKeypair.publicKey
+    tokenOwner: buyerPublicKey,
+    mintAuthority: shopKeypair
   })
-
-  console.log("Keys:", nftTransactionBuilder.getInstructionsWithSigners().map(record => record.key))
 
   transactionBuilder.append(nftTransactionBuilder)
 
-  console.log("Instruction count: ", transactionBuilder.getInstructionCount())
-
   // Delete coupon NFT
 
-  console.log("Delete coupon NFT")
+  console.log("Add: Delete coupon NFT")
 
   const deleteTransactionBuilder = await client.delete({
     mintAddress: couponPublicKey,
-    owner: buyerKeypair
+    owner: new GuestIdentityDriver(buyerPublicKey)
   });
 
   transactionBuilder.append(deleteTransactionBuilder)
+  
+  // Convert to Transaction
 
-  console.log("Keys:", deleteTransactionBuilder.getInstructionsWithSigners().map(record => record.key))
-
-  console.log("Instruction count: ", transactionBuilder.getInstructionCount())
-
-  console.log("Keys:", transactionBuilder.getInstructionsWithSigners().map(record => record.key))
-
-  // Send transaction
-
-  console.log("Send transaction...")
-
-  const latestBlockhash = await connection.getLatestBlockhash()
   const transaction = await transactionBuilder.toTransaction(latestBlockhash)
 
-  transaction.feePayer = ownerKeypair.publicKey
+  transaction.feePayer = shopKeypair.publicKey
+
+  transaction.sign(shopKeypair, nftMintKeypair)
+
+  result.push(formatTransaction(transaction, 'mint_nft_for_sol_del_coupon'))
+
+  return result
+
+  /*
+  
+  // Second TX
+  
+  console.log("Create transaction: Delete coupon NFT")
+
+  // Delete coupon NFT
+
+  console.log("Add: Delete coupon NFT")
+
+  const deleteTransactionBuilder = await client.delete({
+    mintAddress: couponPublicKey,
+    owner: new GuestIdentityDriver(buyerPublicKey)
+  });
+  
+  // Convert to Transaction
+
+  const deleteTransaction = await deleteTransactionBuilder.toTransaction(latestBlockhash)
+
+  deleteTransaction.feePayer = shopKeypair.publicKey
+
+  deleteTransaction.sign(shopKeypair)
+
+  result.push(formatTransaction(deleteTransaction, 'delete_coupon_nft'))
+
   */
 }
 

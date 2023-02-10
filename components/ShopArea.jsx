@@ -230,7 +230,7 @@ export default function ShopArea() {
 
       let item = labeledTransactions[i]
 
-      if (item['label'] == 'mint_nft_for_sol' || item['label'] == 'redeem_coupon') {
+      if (item['label'] == 'mint_nft_for_sol' || item['label'] == 'delete_coupon_nft' || item['label'] == 'mint_nft_for_sol_del_coupon') {
         transactionsToSign.push(item['transaction'])  
         transactionsToSignIndices.push(i)  
       }

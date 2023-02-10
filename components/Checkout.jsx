@@ -59,7 +59,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
     if (couponDiscount == null) {
       setTotalMessage(<p>Total sum: <b>{productPrice} SOL</b></p>)
     } else {
-      setTotalMessage(<p>Total sum: <b>{productPrice - couponDiscount} SOL</b> ({productPrice} SOL - {couponDiscount} SOL)</p>)
+      setTotalMessage(<p>Total sum: <b>{(productPrice - couponDiscount).toFixed(2)} SOL</b> ({productPrice} SOL - {couponDiscount} SOL)</p>)
     }
 
     if (newCoupon == '-1')
