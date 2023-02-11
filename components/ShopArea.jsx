@@ -13,6 +13,8 @@ import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Connection, clusterApiUrl, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
+import { Title } from '@mantine/core'
+
 const SHOP_PUBLIC_KEY = 'MD5FAwmMTQ5h5X4wcgkGFagCHrZ7JpVdDehE94db5rw'
 const NFT_PRICES = require('nft_data/nft_prices.json')
 
@@ -345,18 +347,19 @@ export default function ShopArea() {
 
   return (
     <>
-      <div className={styles.ShopArea}>
-        <div className={styles.ShopAreaContainer}>
-        {generateShopItem(1)}
-        {generateShopItem(2)}
-        {generateShopItem(3)}
-        {generateShopItem(4)}
-        {generateShopItem(5)}
-        {generateShopItem(6)}
-        {generateShopItem(7)}
-        {generateShopItem(8)}
-        {generateShopItem(9)}
-        {generateShopItem(10)}
+      <div className={styles.Area}>
+        <Title order={1}>SolBoards</Title>
+        <div className={styles.ShopAreaItems}>
+          {generateShopItem(1)}
+          {generateShopItem(2)}
+          {generateShopItem(3)}
+          {generateShopItem(4)}
+          {generateShopItem(5)}
+          {generateShopItem(6)}
+          {generateShopItem(7)}
+          {generateShopItem(8)}
+          {generateShopItem(9)}
+          {generateShopItem(10)}
         </div>
       </div>
 

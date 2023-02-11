@@ -166,7 +166,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
 
             sx={{ 
               "&:active": {transform: "none"},
-              "background-color": "#1f1f1f",
+              "background-color": "#101010",
               "&:hover": {"background-color": "black"},
             }}
            >

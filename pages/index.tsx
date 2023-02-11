@@ -6,6 +6,9 @@ import AppBar from '../components/AppBar'
 import NavBar from '../components/NavBar'
 import Footer from '../components/Footer'
 import ShopArea from '../components/ShopArea'
+import AccountArea from '../components/AccountArea'
+import HowToArea from '../components/HowToArea'
+import AboutArea from '../components/AboutArea'
 import WalletContextProvider from '../components/WalletContextProvider'
 
 import { MantineProvider } from '@mantine/core';
@@ -14,10 +17,17 @@ import { ModalsProvider } from '@mantine/modals';
 export default function HomePage() {
 
   const [areaId, setAreaId] = useState("store");
+  const [ts, setTs] = useState()
 
   const onNavItemClick = (item) => {
-    console.log("Nav: go to {item}")
-    setAreaId(item)
+    console.log(`Nav: go to ${item}`)
+
+    if (item != "screenshots") {
+      setAreaId(item)
+      setTs(Date.now())
+    } else {
+      window.open("https://google.com")
+    }
   }
 
   let areaElement;
@@ -27,11 +37,15 @@ export default function HomePage() {
   }
 
   if (areaId == "account") {
-    areaElement = <p>Account</p>
+    areaElement = <AccountArea ts={Date.now()}/>
   }
 
   if (areaId == "how-to") {
-    areaElement = <p>how to</p>
+    areaElement = <HowToArea />
+  }
+
+  if (areaId == "about") {
+    areaElement = <AboutArea />
   }
 
   return (
@@ -46,11 +60,13 @@ export default function HomePage() {
             />
           </Head>
           <WalletContextProvider>
-            <AppBar onHeaderClick={() => onNavItemClick("store")}/>
-            <NavBar onNavItemClick={onNavItemClick} currentArea={areaId}/>
-            <div className={styles.AppBody}>
-              <div className={styles.AppBodyContainer}>
-                {areaElement}
+            <div>
+              <AppBar onHeaderClick={() => onNavItemClick("store")}/>
+              <NavBar onNavItemClick={onNavItemClick} currentArea={areaId}/>
+              <div className={styles.AppBody}>
+                <div className={styles.AppBodyContainer}>
+                  {areaElement}
+                </div>
               </div>
             </div>
             <Footer />

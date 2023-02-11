@@ -1,7 +1,12 @@
+/*
+ * Main
+ * */
+
 .App {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .AppHeader {
@@ -36,157 +41,6 @@
   flex-wrap: nowrap;
   max-width:1400px;
   flex-grow: 1;
-}
-
-
-.form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.input {
-  background: #f2f2f2;
-}
-
-.formField {
-  margin: 10px 0 10px 0;
-  min-width: 500px;
-  padding: 15px;
-  font-size: 16px;
-  border: 0;
-  font-family: "Roboto", sans-serif;
-}
-.formButton {
-  margin: 10px 0 10px 0;
-  padding: 15px;
-  font-size: 16px;
-  border: 0;
-  font-family: "Roboto", sans-serif;
-}
-
-.ShopArea {
-  display:flex;
-  padding:30px 0 30px 30px;
-}
-
-.ShopAreaContainer {
-  display:flex;
-  flex-direction: row;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-.ShopItem {
-  display: flex;
-  margin-right:20px;
-  margin-bottom:20px;
-  font-size:20px;
-  cursor: pointer;
-}
-
-.ShopItemInner:hover {
-  border-color: #13B9EC;
-  box-shadow: 0px 0px 15px 0px #85D7F0;
-}
-
-.ShopItemInner {
-  display: flex;
-  border-radius:7px;
-
-  border: 1px solid #85D7F0;
-
-  padding:18px 12px; 
-  align-items: center;
-  flex-direction: column;
-
-  background-color:white;
-
-  font-size: 20px;
-}
-
-.ShopItemDesc {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.ShopItemName {
-}
-
-.ShopItemPrice {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap:nowrap;
-  margin-left:15px;
-}
-
-.ShopItemPrice img {
-  margin-left:5px;
-}
-
-.checkoutSection {
-  margin-bottom:35px;
-}
-
-.checkoutSection p {
-  margin:10px 0;
-}
-
-.checkoutSelectCouponExplorerLink {
-  font-size: 14px;
-  color: grey;
-  text-decoration:none;
-}
-
-.checkoutSelectCouponExplorerLink:hover {
-  text-decoration:underline;
-}
-
-.checkoutNormalLink {
-  color: black;
-  text-decoration:underline;
-}
-
-.checkoutTitle {
-  font-size: 14px;
-  color: grey;
-}
-
-.InfoBox {
-  display:flex;
-  flex-direction:column;
-  align-items: left;
-  padding:30px 30px 30px 0;
-  border-right: 1px solid #e8e8e8;
-  align-self: stretch;
-  font-size: 18px;
-
-  max-width:350px;
-  min-width:350px;
-}
-
-.InfoBoxContainer {
-  margin-bottom: 25px;
-}
-
-.InfoBox p {
-  margin:0;
-  padding:0;
-}
-
-.InfoBox ol {
-  margin:0;
-  padding: 0 0 0 15px;
-}
-
-.InfoBox h3 {
-  padding: 0;
-  margin: 0 0 15px 0;
-  font-size: 25px;
 }
 
 .NavBar {
@@ -239,4 +93,122 @@
   border-top: 1px solid #e8e8e8;
   justify-content: center;
   padding: 30px 0;
+}
+
+/*
+ * Area
+ * */
+
+.Area {
+  display:flex;
+  flex-direction:column;
+  padding: 50px 0;
+}
+
+.Area h1 {
+  font-size: 26px;
+  margin-bottom:30px;
+}
+
+.Area h2 {
+  font-size: 22px;
+  margin-bottom:15px;
+}
+.AreaSection {
+  margin-bottom:30px;
+}
+
+.Area p {
+  margin:0 0 10px 0;
+}
+
+/*
+ * Shop
+ * */
+
+.ShopAreaItems {
+  display:flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.ShopItem {
+  display: flex;
+  margin-right:20px;
+  margin-bottom:20px;
+  font-size:20px;
+  cursor: pointer;
+}
+
+.ShopItemInner:hover {
+  border-color: #13B9EC;
+  box-shadow: 0px 0px 15px 0px #85D7F0;
+}
+
+.ShopItemInner {
+  display: flex;
+  border-radius:7px;
+
+  border: 1px solid #85D7F0;
+
+  padding:18px 12px; 
+  align-items: center;
+  flex-direction: column;
+
+  background-color:white;
+
+  font-size: 20px;
+}
+
+.ShopItemDesc {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.ShopItemPrice {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap:nowrap;
+  margin-left:15px;
+}
+
+.ShopItemPrice img {
+  margin-left:5px;
+}
+
+/*
+ * Checkout
+ * */
+
+.checkoutSection {
+  margin-bottom:35px;
+}
+
+.checkoutSection p {
+  margin:10px 0;
+}
+
+.checkoutSelectCouponExplorerLink {
+  font-size: 14px;
+  color: grey;
+  text-decoration:none;
+}
+
+.checkoutSelectCouponExplorerLink:hover {
+  text-decoration:underline;
+}
+
+.checkoutNormalLink {
+  color: black;
+  text-decoration:underline;
+}
+
+.checkoutTitle {
+  font-size: 14px;
+  color: grey;
 }
