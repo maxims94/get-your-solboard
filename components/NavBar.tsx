@@ -7,7 +7,8 @@ export default function NavBar({ onNavItemClick, currentArea }) {
       "account": "Account",
       "how-to": "How-to",
       "screenshots": "Screenshots",
-      "about": "About"
+      "about": "About",
+      "demo-video": "Demo-Video"
     }
 
     const generateNavItem = (areaId) => {
@@ -26,8 +27,8 @@ export default function NavBar({ onNavItemClick, currentArea }) {
                   {generateNavItem("account")}
                 </div>
                 <div class={styles.NavBarGroup}>
+                  {generateNavItem("demo-video")}
                   {generateNavItem("how-to")}
-                  {generateNavItem("screenshots")}
                   {generateNavItem("about")}
                 </div>
             </div>

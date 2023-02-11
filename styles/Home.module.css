@@ -95,6 +95,10 @@
   padding: 30px 0;
 }
 
+.Footer a {
+  height: 24px;
+}
+
 /*
  * Area
  * */

@@ -13,7 +13,7 @@ import { Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Connection, clusterApiUrl, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 
-import { Title } from '@mantine/core'
+import { Title, Text } from '@mantine/core'
 
 const SHOP_PUBLIC_KEY = 'MD5FAwmMTQ5h5X4wcgkGFagCHrZ7JpVdDehE94db5rw'
 const NFT_PRICES = require('nft_data/nft_prices.json')
@@ -94,6 +94,10 @@ export default function ShopArea() {
     }
     
     (async () => {
+      setN(true, "success", (<><Text>Checkout successful!</Text><Text>Go to 'Account' to view your purchased item!</Text></>))
+
+      return
+
       setN(true, "loading", "Checking for coupons...")
 
       await sleep(2)
@@ -183,7 +187,7 @@ export default function ShopArea() {
       () => {
         console.log("Checkout successful!")
         //setN(true, "success", (<a href=''>test</a>))
-        setN(true, "success", "Checkout successful! <a href=''>test</a>")
+        setN(true, "success", (<><Text>Checkout successful!</Text><Text>Go to 'Account' to view your purchased item!</Text></>))
       },
       error => {
         console.log("Checkout failed:", String(error))
@@ -340,7 +344,6 @@ export default function ShopArea() {
     const short_name = "skateboard_"+number_str_padded
 
     return (
-      //<ShopItem officialName={official_name} shortName={short_name} itemPrice={NFT_PRICES[short_name]} onClick={onShopItemClickTestN} />
       <ShopItem officialName={official_name} shortName={short_name} itemPrice={NFT_PRICES[short_name]} onClick={onShopItemClick} />
     )
   }

@@ -22,11 +22,13 @@ export default function HomePage() {
   const onNavItemClick = (item) => {
     console.log(`Nav: go to ${item}`)
 
-    if (item != "screenshots") {
+    if (item == 'screenshots') {
+      window.open("https://google.com")
+    } else if (item == 'demo-video') {
+      window.open("https://loom.com")
+    } else {
       setAreaId(item)
       setTs(Date.now())
-    } else {
-      window.open("https://google.com")
     }
   }
 

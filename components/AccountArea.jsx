@@ -126,6 +126,10 @@ export default function AccountArea({ ts }) {
 
     const result = []
 
+    if (!userItems.length) {
+      return <p>No items found.</p>
+    }
+
     for (const item of userItems) {
       console.log(item.mintAddress)
       result.push(
