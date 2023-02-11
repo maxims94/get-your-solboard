@@ -11,6 +11,11 @@ import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 
 export default function HomePage() {
+
+  const onNavItemClick = (item) => {
+    console.log(item) 
+  }
+
   return (
     <MantineProvider>
       <ModalsProvider>
@@ -24,7 +29,7 @@ export default function HomePage() {
           </Head>
           <WalletContextProvider>
             <AppBar />
-            <NavBar />
+            <NavBar onNavItemClick={onNavItemClick} />
             <div className={styles.AppBody}>
               <div className={styles.AppBodyContainer}>
                 <ShopArea />

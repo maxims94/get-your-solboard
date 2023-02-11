@@ -212,25 +212,27 @@
   flex-direction: row;
 }
 
-.NavBarGroup a {
+.NavBarGroup div {
   color: gray
 }
 
-.NavBarGroup a:hover {
-  color: #111
+.NavBarGroup div {
+  font-size:20px;
+  margin-left: 20px;
+  cursor: pointer;
 }
 
-.NavBar {
-
+.NavBarGroup div:first-child {
+  margin-left: 0;
 }
 
-.NavBarContainer {
-
+.NavBarGroup div:hover {
+  color: #111;
 }
 
 .Footer {
-}
-
-.FooterContainer {
-
+  display: flex;
+  border-top: 1px solid #e8e8e8;
+  justify-content: center;
+  padding: 30px 0;
 }

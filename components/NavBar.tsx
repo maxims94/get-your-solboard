@@ -1,24 +1,18 @@
 import styles from '../styles/Home.module.css'
 
-export default function NavBar() {
+export default function NavBar({ onNavItemClick }) {
     
-    const onNavItemClick = (item) => {
-      console.log(item) 
-    }
-
     return (
         <div className={styles.NavBar}>
             <div className={styles.NavBarContainer}>
-
                 <div class={styles.NavBarGroup}>
-                  <a onClick={() => onNavItemClick("store")}>Store</a>
-                  <a onClick={() => onNavItemClick("account")}>Account</a>
+                  <div onClick={() => onNavItemClick("store")}>Store</div>
+                  <div onClick={() => onNavItemClick("account")}>Account</div>
                 </div>
-
                 <div class={styles.NavBarGroup}>
-                  <a onClick={() => onNavItemClick("how-to")}>How-to</a>
-                  <a onClick={() => onNavItemClick("screenshots")}>Screenshots</a>
-                  <a onClick={() => onNavItemClick("about")}>About</a>
+                  <div onClick={() => onNavItemClick("how-to")}>How-to</div>
+                  <div onClick={() => onNavItemClick("screenshots")}>Screenshots</div>
+                  <div onClick={() => onNavItemClick("about")}>About</div>
                 </div>
             </div>
         </div>
