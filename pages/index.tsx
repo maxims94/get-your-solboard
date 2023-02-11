@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { useState } from 'react';
 
 import AppBar from '../components/AppBar'
 import NavBar from '../components/NavBar'
@@ -12,8 +13,25 @@ import { ModalsProvider } from '@mantine/modals';
 
 export default function HomePage() {
 
+  const [areaId, setAreaId] = useState("store");
+
   const onNavItemClick = (item) => {
-    console.log(item) 
+    console.log("Nav: go to {item}")
+    setAreaId(item)
+  }
+
+  let areaElement;
+
+  if (areaId == "store") {
+    areaElement = <ShopArea />
+  }
+
+  if (areaId == "account") {
+    areaElement = <p>Account</p>
+  }
+
+  if (areaId == "how-to") {
+    areaElement = <p>how to</p>
   }
 
   return (
@@ -28,11 +46,11 @@ export default function HomePage() {
             />
           </Head>
           <WalletContextProvider>
-            <AppBar />
-            <NavBar onNavItemClick={onNavItemClick} />
+            <AppBar onHeaderClick={() => onNavItemClick("store")}/>
+            <NavBar onNavItemClick={onNavItemClick} currentArea={areaId}/>
             <div className={styles.AppBody}>
               <div className={styles.AppBodyContainer}>
-                <ShopArea />
+                {areaElement}
               </div>
             </div>
             <Footer />

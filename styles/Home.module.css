@@ -226,6 +226,10 @@
   margin-left: 0;
 }
 
+.NavBarGroup div.currentPage{
+  color: #111;
+}
+
 .NavBarGroup div:hover {
   color: #111;
 }

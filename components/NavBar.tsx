@@ -1,18 +1,34 @@
 import styles from '../styles/Home.module.css'
 
-export default function NavBar({ onNavItemClick }) {
+export default function NavBar({ onNavItemClick, currentArea }) {
     
+    const NAV_ID_TO_NAME = {
+      "store": "Store",
+      "account": "Account",
+      "how-to": "How-to",
+      "screenshots": "Screenshots",
+      "about": "About"
+    }
+
+    const generateNavItem = (areaId) => {
+
+      return currentArea != areaId ? (
+        <div onClick={() => onNavItemClick(areaId)}>{NAV_ID_TO_NAME[areaId]}</div>
+      ) :
+        <div className={styles.currentPage} onClick={() => onNavItemClick(areaId)}>{NAV_ID_TO_NAME[areaId]}</div>
+    }
+
     return (
         <div className={styles.NavBar}>
             <div className={styles.NavBarContainer}>
                 <div class={styles.NavBarGroup}>
-                  <div onClick={() => onNavItemClick("store")}>Store</div>
-                  <div onClick={() => onNavItemClick("account")}>Account</div>
+                  {generateNavItem("store")}
+                  {generateNavItem("account")}
                 </div>
                 <div class={styles.NavBarGroup}>
-                  <div onClick={() => onNavItemClick("how-to")}>How-to</div>
-                  <div onClick={() => onNavItemClick("screenshots")}>Screenshots</div>
-                  <div onClick={() => onNavItemClick("about")}>About</div>
+                  {generateNavItem("how-to")}
+                  {generateNavItem("screenshots")}
+                  {generateNavItem("about")}
                 </div>
             </div>
         </div>
