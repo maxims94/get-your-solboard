@@ -8,15 +8,23 @@ export default function NavBar({ onNavItemClick, currentArea }) {
       "how-to": "How-to",
       "screenshots": "Screenshots",
       "about": "About",
-      "demo-video": "Demo-Video"
+      "demo-video": "Watch Demo"
+      //"demo-video": "Demo-Video"
     }
 
     const generateNavItem = (areaId) => {
 
-      return currentArea != areaId ? (
-        <div onClick={() => onNavItemClick(areaId)}>{NAV_ID_TO_NAME[areaId]}</div>
-      ) :
-        <div className={styles.currentPage} onClick={() => onNavItemClick(areaId)}>{NAV_ID_TO_NAME[areaId]}</div>
+
+      if (areaId != 'demo-video') {
+        return currentArea != areaId ? (
+          <div onClick={() => onNavItemClick(areaId)}>{NAV_ID_TO_NAME[areaId]}</div>
+        ) :
+          <div className={styles.currentPage} onClick={() => onNavItemClick(areaId)}>{NAV_ID_TO_NAME[areaId]}</div>
+      } else {
+        return <div onClick={() => onNavItemClick(areaId)}>&#9656; {NAV_ID_TO_NAME[areaId]}</div>
+        //return <div onClick={() => onNavItemClick(areaId)}>&#9655; {NAV_ID_TO_NAME[areaId]}</div>
+      }
+
     }
 
     return (

@@ -13,8 +13,7 @@
   display: flex;
   border-bottom: 1px solid #e8e8e8;
   justify-content: center;
-  padding: 0 50px;
-
+  padding: 0 15px;
 }
 
 .AppHeaderContainer {
@@ -28,11 +27,34 @@
   flex-grow: 1;
 }
 
+@media (max-width:800px) {
+  .AppHeaderContainer {
+    flex-direction:column;
+    justify-content: flex-start;
+    padding: 20px 0;
+  }
+}
+
+.AppHeaderContainer img {
+  width:525px !important;
+}
+
+@media (max-width:800px) {
+  .AppHeaderContainer img {
+    width:300px !important;
+    align-self: center;
+  }
+  .walletButtonContainer {
+    margin-top: 20px
+  }
+}
+
+
 .AppBody {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  padding: 0 50px;
+  padding: 0 15px;
 }
 
 .AppBodyContainer {
@@ -43,11 +65,16 @@
   flex-grow: 1;
 }
 
+/*
+ * Navigation
+ * */
+
 .NavBar {
   display: flex;
+  flex-direction: row;
   border-bottom: 1px solid #e8e8e8;
   justify-content: center;
-  padding: 0 50px;
+  padding: 0 15px;
 }
 
 .NavBarContainer {
@@ -87,6 +114,43 @@
 .NavBarGroup div:hover {
   color: #111;
 }
+
+@media (max-width:800px) {
+  .NavBar {
+    flex-direction: column;
+    align-items:flex-start;
+  }
+
+  .NavBarContainer {
+    padding: 20px 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items:flex-start;
+  }
+  
+  .NavBarGroup {
+    flex-direction: column;
+  }
+  .NavBarGroup {
+    margin-top:10px;
+  }
+
+  .NavBarGroup div {
+    margin-top: 10px;
+    margin-left: 0;
+  }
+
+  .NavBarGroup div:first-child {
+    margin-top: 0;
+  }
+  .NavBarGroup:first-child {
+    margin-top: 0;
+  }
+}
+
+/*
+ * Footer
+ * */
 
 .Footer {
   display: flex;

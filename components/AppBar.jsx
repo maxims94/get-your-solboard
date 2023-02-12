@@ -8,8 +8,10 @@ export default function AppBar({ onHeaderClick }) {
     return (
         <div className={styles.AppHeader}>
             <div className={styles.AppHeaderContainer}>
-                <Image src="logo.svg" width={525} alt="SolBoards" onClick={onHeaderClick} style={{cursor:"pointer"}}/>
-                <WalletMultiButton />
+                <img src="logo.svg" alt="SolBoards" onClick={onHeaderClick} style={{cursor:"pointer"}}/>
+                <div className={styles.walletButtonContainer}>
+                  <WalletMultiButton/>
+                </div>
             </div>
         </div>
     )
