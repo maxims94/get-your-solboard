@@ -171,15 +171,16 @@
   display:flex;
   flex-direction:column;
   padding: 50px 0;
+  font-size:20px;
 }
 
 .Area h1 {
-  font-size: 26px;
+  font-size: 28px;
   margin-bottom:30px;
 }
 
 .Area h2 {
-  font-size: 22px;
+  font-size: 24px;
   margin-bottom:15px;
 }
 .AreaSection {
@@ -188,6 +189,19 @@
 
 .Area p {
   margin:0 0 10px 0;
+}
+
+.Area ol {
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+
+.Area li {
+  margin-bottom:5px;
+}
+
+.Area a {
+  color: black;
 }
 
 /*
