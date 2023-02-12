@@ -9,7 +9,11 @@ import { Metaplex } from "@metaplex-foundation/js"
 
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
+import AccountItem from '../components/AccountItem'
+
 const SHOP_PUBLIC_KEY = 'MD5FAwmMTQ5h5X4wcgkGFagCHrZ7JpVdDehE94db5rw'
+
+const NFT_URLS = require('../nft_data/nft_urls.json')
 
 export default function AccountArea({ ts }) {
 
@@ -22,8 +26,8 @@ export default function AccountArea({ ts }) {
   if (!connection || !publicKey) {
     return (
       <div className={styles.Area}>
-        <Title order={1}>Account</Title>
-        <p>No wallet connected.</p>
+      <Title order={1}>Account</Title>
+      <p>No wallet connected.</p>
       </div>
     )
   }
@@ -31,11 +35,12 @@ export default function AccountArea({ ts }) {
   const refreshUserBalance = async () => {
     console.log("refresh user balance")
     setUserBalance(undefined)
+
     try {
-    setUserBalance(await connection.getBalance(publicKey))
+      setUserBalance(await connection.getBalance(publicKey))
     } catch(error) {
       console.log("refresh user balance failed:", String(error))
-
+      setUserBalance(-1)
     }
   }
 
@@ -47,56 +52,59 @@ export default function AccountArea({ ts }) {
       const metaplex = Metaplex.make(connection)
       const ownedNfts = await metaplex.nfts().findAllByOwner({ owner: publicKey })
 
+      console.log(ownedNfts)
+
       let couponNft;
       let couponAmount;
       let couponName;
 
       const result = []
 
-      for (let item of ownedNfts) {
+      for (const item of ownedNfts) {
 
-        console.log(item)
-        console.log(String(item))
+        // Assume item['model'] == 'metadata'
 
-        
-        if (item['model'] == 'nft') {
-
-          if (item.updateAuthorityAddress.toString() != SHOP_PUBLIC_KEY) {
-            console.log("Not this shop's NFT")
-            continue
-          }
-
-          result.push({
-            'mintAddress': item.address.toString(),
-            'name': item.name,
-          })
-
-        } else if (item['model'] == 'metadata') {
-
-          if (item.updateAuthorityAddress.toString() != SHOP_PUBLIC_KEY) {
-            console.log("Not this shop's NFT")
-            continue
-          }
-
-          result.push({
-            'mintAddress': item.address.toString(),
-            'name': item.name,
-          })
-        
-        } else {
-          console.log("Unknown model:", item['model'])
+        if (item.updateAuthorityAddress.toString() != SHOP_PUBLIC_KEY) {
+          console.log("Not our NFT")
+          continue
         }
+
+        const uri = item.uri
+
+        let shortName;
+
+        for (const key in NFT_URLS) {
+          if (NFT_URLS[key] == uri) {
+            if (key.startsWith("skateboard")) {
+              shortName = key.slice(0,13)
+              break
+            } else if (key.startsWith("coupon")) {
+              shortName = "coupon"
+              break
+            }
+          }
+        }
+        
+        if (shortName === undefined) {
+          console.log("ERROR:", `Couldn't find the short name of uri ${uri}`)
+        }
+
+        result.push({
+          'mintAddress': item.mintAddress.toString(),
+          'name': item.name,
+          'shortName': shortName
+        })
       }
-      
+
       console.log(result)
       setUserItems(result)
 
     } catch(error) {
       console.log("refresh user items failed:", String(error))
-
+      setUserItems(-1)
     }
   }
-  
+
   if (ts != lastTs) {
     refreshUserBalance()
     refreshUserItems()
@@ -131,24 +139,40 @@ export default function AccountArea({ ts }) {
     }
 
     for (const item of userItems) {
-      console.log(item.mintAddress)
       result.push(
-        <p key={item.mintAddress}>{item.name}, {item.mintAddress}</p>
+        <AccountItem key={item.mintAddress} name={item.name} mintAddress={item.mintAddress} shortName={item.shortName} />
       )
     }
     return result
+
+    /*
+    const number_str = String(number)
+    const official_name = "SolBoard #" + number_str
+
+    const number_str_padded = number_str.length == 1 ?  "0" + number_str : number_str
+    const short_name = "skateboard_"+number_str_padded
+
+    return (
+      <ShopItem officialName={official_name} shortName={short_name} itemPrice={NFT_PRICES[short_name]} onClick={onShopItemClick} />
+    )
+    */
+
   }
 
 
   return (
     <div className={styles.Area}>
-      <Title order={1}>Account</Title>
-      <Title order={2}>Your balance: {generateUserBalance()}</Title>
+    <Title order={1}>Account</Title>
+    <Title order={2}>Your balance: {generateUserBalance()}</Title>
 
-      <Title order={2}>Your items:</Title>
-      {
-        generateUserItems()
-      }
+    <Title order={2}>Your items:</Title>
+    {
+      userItems === undefined ? <p>loading...</p> :
+      userItems === -1 ? <p>failed</p> :
+        <div className={styles.AccountAreaItems}>
+        {generateUserItems()}
+        </div>
+    }
     </div>
   )
 }

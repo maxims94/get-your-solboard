@@ -186,6 +186,58 @@
 }
 
 /*
+ * Account
+ * */
+
+.AccountAreaItems {
+  display:flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.AccountItem {
+  display: flex;
+  margin-right:20px;
+  margin-bottom:20px;
+  font-size:20px;
+  cursor: pointer;
+}
+
+.AccountItemInner:hover {
+  border-color: #13B9EC;
+  box-shadow: 0px 0px 15px 0px #85D7F0;
+}
+
+.AccountItemInner {
+  display: flex;
+  border-radius:7px;
+
+  border: 1px solid #85D7F0;
+
+  padding:18px 12px; 
+  align-items: center;
+  flex-direction: column;
+
+  background-color:white;
+
+  font-size: 20px;
+}
+
+.AccountItemDesc {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.AccountItemAddress {
+  display: flex;
+  margin-left:15px;
+}
+
+/*
  * Checkout
  * */
 

@@ -16,7 +16,7 @@ import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 import { Title, Text } from '@mantine/core'
 
 const SHOP_PUBLIC_KEY = 'MD5FAwmMTQ5h5X4wcgkGFagCHrZ7JpVdDehE94db5rw'
-const NFT_PRICES = require('nft_data/nft_prices.json')
+const NFT_PRICES = require('../nft_data/nft_prices.json')
 
 export default function ShopArea() {
 

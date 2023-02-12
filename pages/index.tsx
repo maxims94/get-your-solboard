@@ -23,9 +23,9 @@ export default function HomePage() {
     console.log(`Nav: go to ${item}`)
 
     if (item == 'screenshots') {
-      window.open("https://google.com")
+      window.open("https://google.com", "_blank")
     } else if (item == 'demo-video') {
-      window.open("https://loom.com")
+      window.open("https://loom.com", "_blank")
     } else {
       setAreaId(item)
       setTs(Date.now())
