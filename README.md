@@ -12,7 +12,7 @@ Each coupon is stored as NFT in your wallet. At every purchase, you can choose w
 
 This is my contribution to the [Encode x Solana hackathon](https://www.encode.club/encode-solana-hackathon).
 
-**[Watch demo](https://loom.com)**
+**[Watch demo](https://www.loom.com/share/cdb80824582f4b66a18303f88e1c0f4a)**
 
 **Live**: [https://getyoursolboard.xyz](https://getyoursolboard.xyz)
 
@@ -30,7 +30,7 @@ In our case, this system allows the user to choose between different coupons (or
 
 ![Checkout](/img/checkout.png)
 
-Contrast this with the conventional scenario: there would be a system deciding for you to e.g. use a coupon for the current purchase. The entire process would be deterministic and you, as user, would be forced to agree to it.
+Contrast this with the conventional scenario: there would be a system deciding for you to e.g. use a coupon for the current purchase. The entire process would be deterministic and you, as user, could merely agree to it.
 
 ## How does it work technically?
 
@@ -91,7 +91,7 @@ Link: [https://getyoursolboard.xyz](https://getyoursolboard.xyz)
 
 ### Remarks
 
-Running into issues? You can also watch this [demo](loom.com).
+Running into issues? You can also watch this [demo](https://www.loom.com/share/cdb80824582f4b66a18303f88e1c0f4a).
 
 **Please be patient.** Devnet can be sluggish sometimes. It usually works if you try again, though.
 

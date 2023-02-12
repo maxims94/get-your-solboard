@@ -14,6 +14,8 @@ import WalletContextProvider from '../components/WalletContextProvider'
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 
+DEMO_URL="https://www.loom.com/share/cdb80824582f4b66a18303f88e1c0f4a"
+
 export default function HomePage() {
 
   const [areaId, setAreaId] = useState("store");
@@ -25,7 +27,7 @@ export default function HomePage() {
     if (item == 'screenshots') {
       window.open("https://google.com", "_blank")
     } else if (item == 'demo-video') {
-      window.open("https://loom.com", "_blank")
+      window.open(DEMO_URL, "_blank")
     } else {
       setAreaId(item)
       setTs(Date.now())

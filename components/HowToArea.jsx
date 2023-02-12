@@ -32,7 +32,7 @@ export default function HowToArea() {
 
       <div className={styles.AreaSection}>
         <Title order={2}>Remarks</Title>
-        <p>Running into issues? You can also watch this <a href="loom.com" target="_blank">demo</a>.</p>
+        <p>Running into issues? You can also watch this <a href="https://www.loom.com/share/cdb80824582f4b66a18303f88e1c0f4a" target="_blank">demo</a>.</p>
         <p><b>Please be patient.</b> Devnet can be sluggish sometimes. It usually works if you try again, though.</p>
         <p><b>Your wallet is topped up automatically.</b> You should alway have enough funds to buy more items.</p>
         <p>If you run into a "Transaction expired" error, that's most likely because you're on mainnet! In this case, please switch to devnet.</p>
