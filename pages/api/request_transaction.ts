@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { clusterApiUrl, Connection, Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js"
 import { getOrCreateAssociatedTokenAccount, createTransferCheckedInstruction, getMint } from "@solana/spl-token"
-import { GuestIdentityDriver, keypairIdentity, Metaplex, TransactionBuilder } from "@metaplex-foundation/js"
+import { GuestIdentityDriver, keypairIdentity, Metaplex, TransactionBuilder, NftBuildersClient } from "@metaplex-foundation/js"
 import base58 from 'bs58'
 import * as dotenv from "dotenv"
 dotenv.config()
@@ -31,7 +31,7 @@ const NFT_URLS = require('nft_data/nft_urls.json')
 const NFT_PRICES = require('nft_data/nft_prices.json')
 const NFT_NAMES = require('nft_data/nft_names.json')
 
-const COUPON_NAME_TO_AMOUNT = {
+const COUPON_NAME_TO_AMOUNT: { [index: string]: number } = {
   'SolBoards Coupon (0.05 SOL)': 0.05,
   'SolBoards Coupon (0.1 SOL)': 0.1,
   'SolBoards Coupon (0.15 SOL)': 0.15
@@ -129,14 +129,16 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
   }
   const productPrice = NFT_PRICES[product]
 
-  let nftPrice;
-  let couponAmount;
-  let couponName;
-  let couponUrl;
+  let nftPrice: number = 0;
+  let couponAmount: number = 0;
+  let couponName: string = '';
+  let couponUrl: string = '';
 
   let transactions;
 
   if (coupon === undefined) {
+
+    // Case 1 & 2
 
     couponAmount = 0
 
@@ -169,6 +171,10 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
     }
 
   } else {
+    
+    // Case 3
+
+    console.log(`Case: Sell NFT and redeem coupon (final price: ${nftPrice})`)
 
     // Check validity of coupon NFT
 
@@ -179,13 +185,17 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
     const ownedNfts = await metaplex.nfts().findAllByOwner({ owner: buyerPublicKey });
 
     let couponNft;
-    let couponAmount;
+    let couponAmount: number = 0;
     let couponName;
-
 
     for (let item of ownedNfts) {
 
       // console.log("Item mint address:", item.mintAddress.toString())
+      
+      if (item.model != 'metadata') {
+        console.log("Unsupported model:", item.model)
+        continue
+      }
 
       if (!item.mintAddress.equals(coupon)) {
         continue
@@ -230,8 +240,6 @@ async function postExec(account: PublicKey, product: string, coupon: any): Promi
     console.log("Amount:", couponAmount)
 
     nftPrice = Number((productPrice - couponAmount).toFixed(2))
-
-    console.log(`Case: Sell NFT and redeem coupon (final price: ${nftPrice})`)
 
     transactions = await sellNftAndRedeemCouponTransaction(connection, client, shopKeypair, buyerPublicKey, nftPrice, product, couponNft)
   }

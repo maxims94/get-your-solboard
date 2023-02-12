@@ -17,9 +17,9 @@ import { ModalsProvider } from '@mantine/modals';
 export default function HomePage() {
 
   const [areaId, setAreaId] = useState("store");
-  const [ts, setTs] = useState()
+  const [ts, setTs] = useState(0)
 
-  const onNavItemClick = (item) => {
+  const onNavItemClick = (item: string) => {
     console.log(`Nav: go to ${item}`)
 
     if (item == 'screenshots') {

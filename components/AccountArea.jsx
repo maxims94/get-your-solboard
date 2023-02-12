@@ -62,7 +62,10 @@ export default function AccountArea({ ts }) {
 
       for (const item of ownedNfts) {
 
-        // Assume item['model'] == 'metadata'
+        if (item.model != 'metadata') {
+          console.log("Unsupported model:", item.model)
+          continue
+        }
 
         if (item.updateAuthorityAddress.toString() != SHOP_PUBLIC_KEY) {
           console.log("Not our NFT")

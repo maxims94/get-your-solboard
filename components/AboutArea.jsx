@@ -1,7 +1,7 @@
 import styles from '../styles/Home.module.css'
 import { Title } from '@mantine/core'
 
-export default function AboutArea({ ts }) {
+export default function AboutArea() {
 
   return (
     <div className={styles.Area}>
