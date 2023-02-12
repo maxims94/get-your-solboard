@@ -1,6 +1,6 @@
 # Get Your SolBoard!
 
-![Screenshots](/img/2023-02-12_screenshots.png)
+![Home screenshot](/img/home.png)
 
 **This is an online shop for skateboards that runs on Solana and has a built-in loyalty programme.**
 
@@ -10,13 +10,19 @@ If you buy a pricy item, you additionally receive a coupon. It can be redeemed o
 
 Each coupon is stored as NFT in your wallet. At every purchase, you can choose which one (if any) to use.
 
-This is my contribution to the [Encode x Solana hackathon](https://www.encode.club/encode-solana-hackathon)hackathon.
+This is my contribution to the [Encode x Solana hackathon](https://www.encode.club/encode-solana-hackathon).
 
-[Watch demo](https://loom.com)
+>>> [Watch demo](https://loom.com)
 
 Live: [https://getyoursolboard.xyz](https://getyoursolboard.xyz)
 
-## Try it yourself!
+## What is special about it?
+
+![Checkout](/img/checkout.png)
+
+You have a **choice**
+
+## Try it yourself
 
 ### Desktop
 
