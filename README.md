@@ -34,17 +34,19 @@ Note that this is essentially a re-implementation of the implementation of Solan
 
 ## Let's extend Solana Pay
 
-Right now, when you scan the QR code and send your public key, both parties expect that a transaction will take place immediately after.
+Right now, when you scan the QR code and send your public key, both parties expect that a transaction happens immediately after.
 
 While this is appropriate in most cases, it limits the kinds of interactions that are possible between customer and merchant.
 
 Sharing your public key means giving the other party access to your entire transaction history, your interests and preferences. Merchants could use it to offer a personalized shopping experience before the user has decided on any transaction.
 
-An extended version could look like this: The merchant presents the customer with a QR code that encodes the URL of an endpoint. The customer's wallet sends its public key to this endpoint, so that the merchant recognizes this customer as the one that's currently being served. (In the case of a browser, the endpoint URL must include the user's session ID so that it can be associated with the public key). The customer now interacts with the merchant and eventually chooses a purchase option. The server creates a transaction, signs it and presents it to the customer as a second QR code. The customer reads it, approves it and sends it.
+**To make this possible, the Solana Pay protocol would need to be extended.**
 
-As side-effect, one would not need to install a browser wallet.
+It could work like this: The merchant presents the customer with a QR code that encodes the URL of an endpoint. The customer's wallet sends its public key to this endpoint, allowing the merchant to recognize this customer as the "current customer". (In the case of a browser, the endpoint URL must include the user's session ID so that it can be associated with the public key). The customer now interacts with the merchant and eventually chooses a purchase option. The server creates a transaction, signs it and presents it to the customer as a second QR code. The customer scans it, approves it and sends it to the network.
 
-Consider a self-service kiosk (like those at McDonalds). A customer approaches it and scans a QR code. The public key is sent to a server, telling the server that "customer X is currently standing in front of machine Y". The machine now makes personalized offer, such as the option of spending loyalty points on a free meal. The customer takes that option and is shown another QR code. After scanning it and approving the transaction, the order goes through.
+As side-effect, you would not need a browser wallet anymore. It would be sufficient to scan QR codes with your phone.
+
+**Consider a self-service kiosk (like those at McDonalds).** A customer approaches it and scans a QR code that is publicly displayed. The customer's wallet sends its public key to a server, telling the server that "customer X is currently standing in front of machine Y". The machine now makes personalized offers, such as the option of spending loyalty points on a free meal. The customer picks that option and is shown another QR code (this time, containing the requested transaction). After scanning it and approving the transaction, the order goes through.
 
 ## Try it yourself
 
