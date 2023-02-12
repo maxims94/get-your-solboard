@@ -20,27 +20,15 @@ This is my contribution to the [Encode x Solana hackathon](https://www.encode.cl
 
 **I wanted to build a more interactive version of Solana Pay.**
 
-In Solana Pay, you scan a QR code, wait for a moment and are presented with a final transaction that you need to approve.
+In Solana Pay, you scan a QR code, wait for a moment and are presented with a final transaction that you need to approve. There's no space for user input! There is no real bidirectional interaction or back and forth with the user; the server can't query them about their preferences or get additional inputs.
 
-There's no space for user input!
+I wanted to change that by using a slightly different approach. First, the user identifies themselves to the merchant. This allows the system to generate multiple options specific to that user. The user then chooses between them. Depending on their choice, a different transaction is generated and presented.
 
-I wanted to change that by using a slightly different approach.
+This way, a lot more dynamic interactions between customer and merchant are possible. In particular, you can split up the process into multiple steps (with possible user input) rather than forcing the entire process into a single step.
 
-First, the user identifies themselves to the merchant.
-
-This allows the system to generate multiple options specific to that user.
-
-The user then chooses between them.
-
-Depending on their choice, a different transaction is generated and presented.
-
-This way, a lot more dynamic interactions between customer and merchant are possible.
-
-In our case, this allows the user to choose between different coupons (or choose no coupon at all).
+In our case, this allows the user to choose between different coupons (or choose no coupon at all):
 
 ![Checkout](/img/checkout.png)
-
-**The problem: You can't introduce multiple steps**. Once the server has received the pubkey, it is forced to create a transaction immediately -- there is no real bidirectional interaction or back and forth with the user; the server can't query them about their preferences. And if you try to circumvent that (like I tried in multiple failed attempts), then the architecture becomes unwiedly and complicated and you end up setting up a persistence layer just to store user sessions. Makes no sense.
 
 ## How does it work technically?
 
