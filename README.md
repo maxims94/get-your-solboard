@@ -20,15 +20,17 @@ This is my contribution to the [Encode x Solana hackathon](https://www.encode.cl
 
 **I wanted to build a more interactive version of Solana Pay.**
 
-In Solana Pay, you scan a QR code, wait for a moment and are presented with a final transaction that you need to approve. There's no space for user input! There is no real bidirectional interaction or back and forth with the user; the server can't query them about their preferences or get additional inputs.
+In Solana Pay, you scan a QR code, wait for a moment and are presented with a final transaction that you need to approve. There's no space for user input! There is no real back and forth with the user. The server can't query them about their preferences or request additional inputs.
 
-I wanted to change that by using a slightly different approach. First, the user identifies themselves to the merchant. This allows the system to generate multiple options specific to that user. The user then chooses between them. Depending on their choice, a different transaction is generated and presented.
+I wanted to enable such inputs by using a slightly different approach. First, the user identifies himself to the merchant through his public key. This allows the system to generate multiple options specific to that user and display them in the UI. The user then chooses between them. Depending on the choice, a different transaction is generated on the server and sent back for the user to sign.
 
-This way, a lot more dynamic interactions between customer and merchant are possible. In particular, you can split up the process into multiple steps (with possible user input) rather than forcing the entire process into a single step.
+This way, a lot more dynamic interactions between customer and merchant are possible. In particular, you can split up the payment process into multiple steps (with possible user input) rather than forcing the entire process into a single step.
 
-In our case, this allows the user to choose between different coupons (or choose no coupon at all):
+In our case, this system allows the user to choose between different coupons (or choose no coupon at all):
 
 ![Checkout](/img/checkout.png)
+
+In a typical scenario, there would be a system deciding for you to e.g. use a coupon for the current purchase. The entire process would be deterministic and you, as user, could merely agree to it.
 
 ## How does it work technically?
 
