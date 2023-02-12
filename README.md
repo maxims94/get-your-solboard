@@ -18,9 +18,29 @@ This is my contribution to the [Encode x Solana hackathon](https://www.encode.cl
 
 ## What is special about it?
 
+**I wanted to build a more interactive version of Solana Pay.**
+
+In Solana Pay, you scan a QR code, wait for a moment and are presented with a final transaction that you need to approve.
+
+There's no space for user input!
+
+I wanted to change that by using a slightly different approach.
+
+First, the user identifies themselves to the merchant.
+
+This allows the system to generate multiple options specific to that user.
+
+The user then chooses between them.
+
+Depending on their choice, a different transaction is generated and presented.
+
+This way, a lot more dynamic interactions between customer and merchant are possible.
+
+In our case, this allows the user to choose between different coupons (or choose no coupon at all).
+
 ![Checkout](/img/checkout.png)
 
-You have a **choice**
+**The problem: You can't introduce multiple steps**. Once the server has received the pubkey, it is forced to create a transaction immediately -- there is no real bidirectional interaction or back and forth with the user; the server can't query them about their preferences. And if you try to circumvent that (like I tried in multiple failed attempts), then the architecture becomes unwiedly and complicated and you end up setting up a persistence layer just to store user sessions. Makes no sense.
 
 ## How does it work technically?
 
@@ -30,7 +50,11 @@ Once a decision has been made, the user clicks on the "Pay" button and a POST re
 
 The client deserializes the transaction and requests the user to sign it via the wallet software. Once signed, the transaction is sent to the blockchain.
 
-Note that this is essentially a re-implementation of Solana Pay, especially the part that happens on the wallet and the (de-/)serialization. This was necessary to make this custom architecture possible.
+Note that I tried to do that with Solana Pay, but couldn't find a way to transfer the public key of the customer early enough to the frontend.
+
+Ultimately I realized that **I was trying to force a technology onto a problem that it was not supposed to solve** -- and changed my approach!
+
+This led to essentially a re-implementation of Solana Pay, especially the part that happens in the wallet software (e.g. POST request, (de-/)serialization). This was necessary to make this custom architecture possible.
 
 ## Let's extend Solana Pay
 
@@ -45,6 +69,8 @@ To make this possible, the Solana Pay protocol would need to be extended.
 It could work like this: The merchant presents the customer with a QR code that encodes the URL of an endpoint. The customer's wallet sends its public key to this endpoint, allowing the merchant to recognize this customer as the "current customer". (In the case of a browser, the endpoint URL must include the user's session ID so that it can be associated with the public key). The customer now interacts with the merchant and eventually chooses a purchase option. The server creates a transaction, signs it and presents it to the customer as a second QR code. The customer scans it, approves it and sends it to the network.
 
 As side-effect, you would not need a browser wallet anymore. It would be sufficient to scan QR codes with your phone.
+
+A small change in the protocol could go a long way in improving the customer's shopping experience.
 
 ### Example: Self-service kiosk
 
