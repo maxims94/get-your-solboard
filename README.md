@@ -24,13 +24,13 @@ You have a **choice**
 
 ## How does it work technically?
 
-When the user opens the checkout window, the client fetches data from the blockchain on which coupons are available. The user can now choose between them. The effect of the chosen decision is displayed.
+When the user opens the checkout window, the client fetches the user's coupons from the blockchain. The user can now choose between them. The consequences of the currently selected option are shown.
 
-Once a decision has been made, the user clicks on "Pay" and a POST request is sent to an endpoint of the server. The server validates and process the request, possibly applying a discount on the requested items' price. It creates the respective transaction, serializes it and sends it back to the user.
+Once a decision has been made, the user clicks on the "Pay" button and a POST request is sent to the server. The server validates and process the request, possibly applying a discount on the calculated total. It creates the respective transaction, serializes it and sends it back to the user as POST response.
 
-The client deserializes the transaction, requests the user to sign it via the wallet software. Then, the transaction is sent to the blockchain.
+The client deserializes the transaction and requests the user to sign it via the wallet software. Once signed, the transaction is sent to the blockchain.
 
-Note that this is essentially a re-implementation of the implementation of Solana Pay, especially the part that happens on the wallet and the (de-/)serialization. This was necessary to write this custom architecture.
+Note that this is essentially a re-implementation of Solana Pay, especially the part that happens on the wallet and the (de-/)serialization. This was necessary to make this custom architecture possible.
 
 ## Let's extend Solana Pay
 
@@ -40,13 +40,17 @@ While this is appropriate in most cases, it limits the kinds of interactions tha
 
 Sharing your public key means giving the other party access to your entire transaction history, your interests and preferences. Merchants could use it to offer a personalized shopping experience before the user has decided on any transaction.
 
-**To make this possible, the Solana Pay protocol would need to be extended.**
+To make this possible, the Solana Pay protocol would need to be extended.
 
 It could work like this: The merchant presents the customer with a QR code that encodes the URL of an endpoint. The customer's wallet sends its public key to this endpoint, allowing the merchant to recognize this customer as the "current customer". (In the case of a browser, the endpoint URL must include the user's session ID so that it can be associated with the public key). The customer now interacts with the merchant and eventually chooses a purchase option. The server creates a transaction, signs it and presents it to the customer as a second QR code. The customer scans it, approves it and sends it to the network.
 
 As side-effect, you would not need a browser wallet anymore. It would be sufficient to scan QR codes with your phone.
 
-**Consider a self-service kiosk (like those at McDonalds).** A customer approaches it and scans a QR code that is publicly displayed. The customer's wallet sends its public key to a server, telling the server that "customer X is currently standing in front of machine Y". The machine now makes personalized offers, such as the option of spending loyalty points on a free meal. The customer picks that option and is shown another QR code (this time, containing the requested transaction). After scanning it and approving the transaction, the order goes through.
+### Example: Self-service kiosk
+
+What would this look like from the customer's point of view at a self-service kiosk (like those at McDonalds)?
+
+A customer approaches the machine and scans a public QR code. The customer's wallet sends its public key to a server, essentially telling the server that "customer X is currently standing in front of machine Y". The machine can now make personalized offers to the customer, such as the option of spending loyalty points on a free meal. The customer picks that option and is shown another QR code (this time, containing the requested transaction). After scanning it and approving the transaction, the order goes through.
 
 ## Try it yourself
 
