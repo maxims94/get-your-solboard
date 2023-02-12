@@ -24,7 +24,7 @@
   justify-content: space-between;
   padding:40px 0;
   flex-wrap: nowrap;
-  max-width:1400px;
+  max-width:1230px;
   flex-grow: 1;
 }
 
@@ -39,7 +39,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  max-width:1400px;
+  max-width:1230px;
   flex-grow: 1;
 }
 
@@ -57,7 +57,7 @@
   justify-content: space-between;
   padding:40px 0;
   flex-wrap: nowrap;
-  max-width:1400px;
+  max-width:1230px;
   flex-grow: 1;
 }
 
@@ -134,7 +134,7 @@
   display:flex;
   flex-direction: row;
   flex-wrap:wrap;
-  justify-content:center;
+  justify-content:flex-start;
 }
 
 .ShopItem {
@@ -154,7 +154,8 @@
   display: flex;
   border-radius:7px;
 
-  border: 1px solid #85D7F0;
+  border: 1px solid #13B9EC;
+  /*border: 1px solid #85D7F0;*/
 
   padding:18px 12px; 
   align-items: center;
@@ -170,7 +171,9 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin: 20px 5px 0 5px;
+
+  align-self:stretch;
 }
 
 .ShopItemPrice {
@@ -193,7 +196,7 @@
   display:flex;
   flex-direction: row;
   flex-wrap:wrap;
-  justify-content:center;
+  justify-content:flex-start;
 }
 
 .AccountItem {
@@ -205,15 +208,15 @@
 }
 
 .AccountItemInner:hover {
-  border-color: #13B9EC;
-  box-shadow: 0px 0px 15px 0px #85D7F0;
+  border-color: #C049F3;
+  box-shadow: 0px 0px 15px 0px #BD72E4;
 }
 
 .AccountItemInner {
   display: flex;
   border-radius:7px;
 
-  border: 1px solid #85D7F0;
+  border: 1px solid #C049F3;
 
   padding:18px 12px; 
   align-items: center;
@@ -226,15 +229,19 @@
 
 .AccountItemDesc {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin-top: 20px;
+  align-self: flex-start;
+  margin-left:10px;
 }
 
 .AccountItemAddress {
   display: flex;
-  margin-left:15px;
+  font-size:12px;
+  color: gray;
+  margin-top:5px;
 }
 
 /*

@@ -144,19 +144,6 @@ export default function AccountArea({ ts }) {
       )
     }
     return result
-
-    /*
-    const number_str = String(number)
-    const official_name = "SolBoard #" + number_str
-
-    const number_str_padded = number_str.length == 1 ?  "0" + number_str : number_str
-    const short_name = "skateboard_"+number_str_padded
-
-    return (
-      <ShopItem officialName={official_name} shortName={short_name} itemPrice={NFT_PRICES[short_name]} onClick={onShopItemClick} />
-    )
-    */
-
   }
 
 

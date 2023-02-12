@@ -135,7 +135,7 @@ export default function Checkout({ itemId, opened, couponList, onConfirm, onCanc
                         target="_blank"
                         className={styles.checkoutSelectCouponExplorerLink}
                       >
-                      View in Solana Explorer
+                      Address: {item.mintAddress.slice(0,10)}
                       </a>
                     }
                   />

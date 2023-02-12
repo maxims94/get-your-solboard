@@ -25,7 +25,7 @@ export default function AccountItem({ name, mintAddress, shortName }) {
         <div className={styles.AccountItemDesc}>
           <div className={styles.AccountItemName}>{getName()}</div>
           <div className={styles.AccountItemAddress}>
-            {`[${mintAddress.slice(0,5)}]`}
+            Address: {`${mintAddress.slice(0,10)}`}
           </div>
         </div>
       </div>
