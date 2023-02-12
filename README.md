@@ -24,13 +24,13 @@ In Solana Pay, you scan a QR code, wait for a moment and are presented with a fi
 
 I wanted to enable such inputs by using a slightly different approach. First, the user identifies himself to the merchant through his public key. This allows the system to generate multiple options specific to that user and display them in the UI. The user then chooses between them. Depending on the choice, a different transaction is generated on the server and sent back for the user to sign.
 
-This way, a lot more dynamic interactions between customer and merchant are possible. In particular, you can split up the payment process into multiple steps (with possible user input) rather than forcing the entire process into a single step.
+This way, a lot more dynamic interactions between customer and merchant are possible. In particular, you can split up the payment process into multiple steps (with user input inbetween) rather than forcing the entire process into a single step.
 
 In our case, this system allows the user to choose between different coupons (or choose no coupon at all):
 
 ![Checkout](/img/checkout.png)
 
-In a typical scenario, there would be a system deciding for you to e.g. use a coupon for the current purchase. The entire process would be deterministic and you, as user, could merely agree to it.
+Contrast this with the conventional scenario: there would be a system deciding for you to e.g. use a coupon for the current purchase. The entire process would be deterministic and you, as user, would be forced to agree to it.
 
 ## How does it work technically?
 
