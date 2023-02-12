@@ -135,11 +135,12 @@
   flex-direction: row;
   flex-wrap:wrap;
   justify-content:flex-start;
+  margin-left:-20px;
 }
 
 .ShopItem {
   display: flex;
-  margin-right:20px;
+  margin-left:20px;
   margin-bottom:20px;
   font-size:20px;
   cursor: pointer;
@@ -197,11 +198,12 @@
   flex-direction: row;
   flex-wrap:wrap;
   justify-content:flex-start;
+  margin-left:-20px;
 }
 
 .AccountItem {
   display: flex;
-  margin-right:20px;
+  margin-left:20px;
   margin-bottom:20px;
   font-size:20px;
   cursor: pointer;
