@@ -1,4 +1,4 @@
-# Get your SolBoard!
+# Get Your SolBoard!
 
 ![Screen1](/img/screen1.png)
 

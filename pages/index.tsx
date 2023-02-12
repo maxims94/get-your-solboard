@@ -55,10 +55,10 @@ export default function HomePage() {
       <ModalsProvider>
         <div className={styles.App}>
           <Head>
-            <title>Get your SolBoard!</title>
+            <title>Get Your SolBoard!</title>
             <meta
               name="description"
-              content="Get your SolBoard!"
+              content="Get Your SolBoard!"
             />
           </Head>
           <WalletContextProvider>
