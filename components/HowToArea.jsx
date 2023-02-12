@@ -70,12 +70,6 @@ export default function HowToArea() {
                 <li>For fun!</li>
             </ol>
           </div>
-          <div className={styles.InfoBoxContainer}>
-            <h3>Links</h3>
-            <p>
-                <a href="https://github.com/maxims94/get-your-solboard">GitHub</a> <a href="mailto:maxim.schmidt@tum.de">Email</a> <a href="https://twitter.com/maximschmidt94">Twitter</a>
-            </p>
-          </div>
         </div>
     )
   */
