@@ -14,7 +14,7 @@ import WalletContextProvider from '../components/WalletContextProvider'
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 
-DEMO_URL="https://www.loom.com/share/cdb80824582f4b66a18303f88e1c0f4a"
+const DEMO_URL="https://www.loom.com/share/cdb80824582f4b66a18303f88e1c0f4a"
 
 export default function HomePage() {
 
