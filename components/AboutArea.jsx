@@ -9,7 +9,7 @@ export default function AboutArea() {
 
       <div className={styles.AreaSection}>
         <Title order={2}>What is this?</Title>
-        <p>An online shop for skateboards that runs on Solana and has a built-in loyalty programme.</p>
+        <p>An online shop for skateboards that runs on Solana and has a built-in loyalty program.</p>
         <p>This is my contribution to the Encode x Solana <a href="https://www.encode.club/encode-solana-hackathon">hackathon</a>.</p>
         <p>For more details, see this project's <a href="https://github.com/maxims94/get-your-solboard">GitHub</a> page.</p>
       </div>
