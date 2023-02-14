@@ -76,7 +76,7 @@ Link: [https://getyoursolboard.xyz](https://getyoursolboard.xyz)
 
 1. Download [Phantom Wallet extension](https://chrome.google.com/webstore/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa) for Chrome
 2. Set up a new wallet
-3. **Switch to devnet** (important!)
+3. **Switch to devnet** (Phantom Wallet -> top left icon (Settings) -> Developer Settings -> Change Network)
 4. Go to the 'Store' section
 5. Start purchasing SolBoards!
 
@@ -84,7 +84,7 @@ Link: [https://getyoursolboard.xyz](https://getyoursolboard.xyz)
 
 1. Install the [Phantom Wallet app](https://phantom.app/)
 2. Set up a new wallet
-3. **Switch to devnet** (important!)
+3. **Switch to devnet** (Phantom Wallet App -> Settings -> Network)
 4. Switch to the **in-app browser** (not your regular one!)
 5. Inside of it, navigate to [https://getyoursolboard.xyz](https://getyoursolboard.xyz)
 5. Start purchasing SolBoards!
