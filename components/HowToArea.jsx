@@ -12,7 +12,7 @@ export default function HowToArea() {
         <ol>
           <li>Download <a href="https://chrome.google.com/webstore/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa" target="_blank">Phantom Wallet extension</a> for Chrome</li>
           <li>Set up a new wallet</li>
-          <li><b>Switch to devnet</b> (Phantom Wallet -> top left icon (Settings) -> Developer Settings -> Change Network)</li>
+          <li><b>Switch to devnet</b> (Phantom Wallet -&gt; top left icon (Settings) -&gt; Developer Settings -&gt; Change Network)</li>
           <li>Go to the 'Store' section</li>
           <li>Start purchasing SolBoards!</li>
         </ol>
@@ -23,7 +23,7 @@ export default function HowToArea() {
         <ol>
           <li>Install the <a href="https://phantom.app/" target="_blank">Phantom Wallet app</a></li>
           <li>Set up a new wallet</li>
-          <li><b>Switch to devnet</b> (Phantom Wallet App -> Settings -> Network)</li>
+          <li><b>Switch to devnet</b> (Phantom Wallet App -&gt; Settings -&gt; Network)</li>
           <li>Switch to the <b>in-app browser</b> (not your regular one!)</li>
           <li>Open this website in it</li>
           <li>Start purchasing SolBoards!</li>
